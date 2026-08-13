@@ -1,0 +1,9 @@
+# Normaliza a quebra de linha no repositório, para o mesmo arquivo não
+# aparecer como "modificado" só porque foi aberto noutro sistema.
+* text=auto eol=lf
+
+# Estes são binários ou não devem ser normalizados.
+*.docx binary
+*.pdf  binary
+*.png  binary
+*.jpg  binary

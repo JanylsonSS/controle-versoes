@@ -1,0 +1,12 @@
+# Dados de execução: banco e arquivos enviados. Não versionar.
+dados/
+
+# Banco temporário da verificação automática (npm test).
+dados-verificacao/
+
+# Configuração local de ferramenta, específica de cada máquina.
+.claude/
+
+# Se um dia o projeto tiver dependências (React/Vite), elas não entram aqui.
+node_modules/
+dist/

@@ -1,0 +1,16 @@
+{
+  "name": "controle-versoes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Controle de versões de projetos de engenharia e arquitetura — protótipo para validação com a equipe",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node servidor.js",
+    "recomecar": "node src/persistencia/seed.js --recriar",
+    "test": "node verificacao/executar.mjs",
+    "verificar": "node verificacao/executar.mjs"
+  }
+}
