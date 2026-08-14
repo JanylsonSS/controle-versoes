@@ -17,10 +17,9 @@
 
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { CAMINHO_BANCO, PASTA_DADOS, PASTA_ARQUIVOS } from '../config.js';
+import { CAMINHO_BANCO, PASTA_DADOS } from '../config.js';
 
 fs.mkdirSync(PASTA_DADOS, { recursive: true });
-fs.mkdirSync(PASTA_ARQUIVOS, { recursive: true });
 
 export const banco = new DatabaseSync(CAMINHO_BANCO);
 

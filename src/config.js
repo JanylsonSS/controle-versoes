@@ -7,23 +7,24 @@ export const RAIZ = path.resolve(AQUI, '..');
 /* ══════════════════════════════════════════════════════════════════════
  * NOME EXIBIDO NA TELA
  *
- * O nome definitivo será escolhido com a equipe durante o piloto.
- * Este é o ÚNICO lugar do código onde ele aparece: trocar aqui troca em
- * todas as telas. Não repita este texto em nenhum outro arquivo.
+ * Veio do modelo visual aprovado ("Promav — Gestão de projetos").
+ * Este é o ÚNICO lugar do código onde ele mora: o frontend recebe pelo
+ * /api/sessao. Trocar aqui troca em todas as telas.
  * ══════════════════════════════════════════════════════════════════════ */
-export const NOME_EXIBICAO = 'Controle de Versões';
-export const CHAMADA = 'qual versão vale agora';
+export const NOME_EXIBICAO = 'Promav';
+export const CHAMADA = 'Gestão de projetos';
 
 export const PORTA = Number(process.env.PORTA || 3000);
 export const FUSO = 'America/Sao_Paulo';
 
-/* Onde ficam banco e arquivos. A variável de ambiente PASTA_DADOS existe para
- * a verificação automática rodar num banco separado — assim `npm test` nunca
- * apaga os dados da demonstração. Em uso normal, ninguém precisa mexer. */
+/* Onde ficam os dados. A variável de ambiente PASTA_DADOS existe para a
+ * verificação automática rodar num banco separado — assim `npm test`
+ * nunca apaga os dados da demonstração. */
 export const PASTA_DADOS = path.resolve(RAIZ, process.env.PASTA_DADOS || 'dados');
 export const CAMINHO_BANCO = path.join(PASTA_DADOS, 'banco.db');
-export const PASTA_ARQUIVOS = path.join(PASTA_DADOS, 'arquivos');
-export const PASTA_PUBLICA = path.join(RAIZ, 'publico');
 
-/** Tamanho máximo de arquivo aceito no upload (protótipo). */
-export const LIMITE_ARQUIVO_MB = 25;
+/* O frontend em React é compilado para `dist/` (npm run build, passo 2).
+ * Enquanto o build não existir, o servidor mostra a página provisória
+ * de `publico/`. */
+export const PASTA_DIST = path.join(RAIZ, 'dist');
+export const PASTA_PUBLICA = path.join(RAIZ, 'publico');

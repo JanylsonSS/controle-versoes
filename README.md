@@ -1,13 +1,18 @@
-# controle-versoes
+# controle-versoes (Promav)
 
-Protótipo funcional de **controle e comunicação de versões de projeto** para uma
-construtora de 7 pessoas. Serve a um objetivo só:
+> ⚠️ **EM MIGRAÇÃO (13/08/2026).** O sistema está sendo reescrito: o domínio
+> mudou de "revisões numeradas de arquivo" para **orientações** (mudança com
+> título, data, descrição e responsável, que vira atividade sozinha), e a
+> camada de telas HTML foi substituída por uma **API JSON** (`src/api/`) que
+> servirá um frontend em **React** (passo 2, ainda não construído).
+>
+> **O que funciona hoje:** `node servidor.js` sobe a API em `/api/*` com uma
+> página provisória na raiz. `npm test` roda as verificações da API.
+> **O que este README ainda descreve errado:** as seções sobre telas — elas
+> descrevem a interface antiga e serão reescritas quando o React entrar.
 
-> ninguém trabalha, orça ou executa sobre uma versão que não seja a vigente.
-
-Na tela o sistema se chama provisoriamente **"Controle de Versões"** — o nome
-definitivo será escolhido com a equipe no piloto. Ele está num único lugar do
-código: a constante `NOME_EXIBICAO` em [src/config.js](src/config.js).
+Sistema de gestão de projetos de uma construtora de 8 pessoas. O nome exibido
+("Promav") mora num único lugar: `NOME_EXIBICAO` em [src/config.js](src/config.js).
 
 > **Vai mexer no código?** Comece por
 > [PARA-DESENVOLVEDORES.md](PARA-DESENVOLVEDORES.md) — arquitetura, modelo de

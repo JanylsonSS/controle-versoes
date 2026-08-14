@@ -134,6 +134,7 @@ export const equipes = {
 
 const SELECT_ORIENTACAO = `
   SELECT o.*,
+         o.publicada_por AS autor_id,
          a.nome        AS autor_nome,
          a.papel       AS autor_papel,
          r.nome        AS responsavel_nome,
@@ -253,7 +254,10 @@ export const orientacoes = {
           .run(titulo, descricao, responsavelId ? Number(responsavelId) : null, antiga.atividade_id);
       }
 
-      banco.prepare('UPDATE avisos SET confirmado_em = NULL WHERE orientacao_id = ?').run(Number(id));
+      // A reabertura da ciência acontece dentro de avisarEquipe (upsert):
+      // para a equipe ATUAL, o prazo renova e a confirmação zera; quem já
+      // saiu da equipe não é tocado — não teria como confirmar — e o
+      // próprio editor não deve ciência do que ele mesmo escreveu.
       avisarEquipe(id, antiga.projeto_id, editorId, instante);
 
       banco.exec('COMMIT');
@@ -302,16 +306,22 @@ export const orientacoes = {
  */
 function avisarEquipe(orientacaoId, projetoId, autorId, instante) {
   const destinatarios = quemDeveSerAvisado(equipes.doProjeto(projetoId), { id: Number(autorId) });
-  const inserir = banco.prepare(
-    'INSERT OR IGNORE INTO avisos (orientacao_id, usuario_id, enviado_em) VALUES (?, ?, ?)'
+  // Upsert: na publicação age como INSERT comum; na EDIÇÃO, renova o prazo
+  // (enviado_em) e reabre a confirmação — senão a ciência reaberta já
+  // nasceria "atrasada", contada a partir do aviso original.
+  const avisar = banco.prepare(
+    `INSERT INTO avisos (orientacao_id, usuario_id, enviado_em) VALUES (?, ?, ?)
+     ON CONFLICT(orientacao_id, usuario_id)
+     DO UPDATE SET enviado_em = excluded.enviado_em, confirmado_em = NULL`
   );
-  for (const pessoa of destinatarios) inserir.run(Number(orientacaoId), pessoa.id, instante);
+  for (const pessoa of destinatarios) avisar.run(Number(orientacaoId), pessoa.id, instante);
 }
 
 /* ─── Avisos e ciência (R5, R6) ─────────────────────────────────────── */
 
 const SELECT_AVISO = `
   SELECT v.*,
+         o.publicada_por AS autor_id,
          o.titulo     AS orientacao_titulo,
          o.descricao  AS orientacao_descricao,
          o.projeto_id AS projeto_id,
@@ -323,19 +333,34 @@ const SELECT_AVISO = `
     JOIN usuarios u    ON u.id = o.publicada_por
 `;
 
+/* R19 na leitura: quem SAIU da equipe carrega avisos antigos na tabela
+ * (são histórico de ciência e não podem ser apagados), mas não pode mais
+ * ler o conteúdo do projeto por eles. O EXISTS reconfere a equipe ATUAL;
+ * `veTudo` é a exceção da coordenação e da direção. */
+const SO_DA_EQUIPE_ATUAL = `AND EXISTS (
+  SELECT 1 FROM equipes e
+   WHERE e.projeto_id = o.projeto_id AND e.usuario_id = v.usuario_id
+)`;
+
 export const avisos = {
-  doUsuario: (usuarioId, { apenasPendentes = false } = {}) =>
+  doUsuario: (usuarioId, { apenasPendentes = false, veTudo = false } = {}) =>
     banco
       .prepare(
         `${SELECT_AVISO} WHERE v.usuario_id = ?
           ${apenasPendentes ? 'AND v.confirmado_em IS NULL' : ''}
+          ${veTudo ? '' : SO_DA_EQUIPE_ATUAL}
           ORDER BY v.enviado_em DESC`
       )
       .all(Number(usuarioId)),
 
-  contarPendentes: (usuarioId) =>
+  contarPendentes: (usuarioId, { veTudo = false } = {}) =>
     banco
-      .prepare('SELECT COUNT(*) AS n FROM avisos WHERE usuario_id = ? AND confirmado_em IS NULL')
+      .prepare(
+        `SELECT COUNT(*) AS n FROM avisos v
+           JOIN orientacoes o ON o.id = v.orientacao_id
+          WHERE v.usuario_id = ? AND v.confirmado_em IS NULL
+          ${veTudo ? '' : SO_DA_EQUIPE_ATUAL}`
+      )
       .get(Number(usuarioId)).n,
 
   /** R6 — quem foi avisado desta orientação e quem já confirmou. */
@@ -367,7 +392,8 @@ export const avisos = {
 
 const SELECT_ATIVIDADE = `
   SELECT a.*, r.nome AS responsavel_nome, r.papel AS responsavel_papel,
-         c.nome AS criador_nome, p.nome AS projeto_nome
+         c.nome AS criador_nome, p.nome AS projeto_nome,
+         a.criada_por AS autor_id, c.nome AS autor_nome
     FROM atividades a
     JOIN projetos p ON p.id = a.projeto_id
     LEFT JOIN usuarios r ON r.id = a.responsavel_id
@@ -382,11 +408,16 @@ export const atividades = {
       .prepare(`${SELECT_ATIVIDADE} WHERE a.projeto_id = ? ORDER BY a.ordem, a.id`)
       .all(Number(projetoId)),
 
-  /** Para a tela inicial: "atividades em que você foi marcado". */
-  doResponsavel: (usuarioId) =>
+  /** Para a tela inicial: "atividades em que você foi marcado".
+   * Mesmo R19 da leitura de avisos: quem saiu da equipe deixa de ver. */
+  doResponsavel: (usuarioId, { veTudo = false } = {}) =>
     banco
       .prepare(
         `${SELECT_ATIVIDADE} WHERE a.responsavel_id = ? AND a.situacao <> 'FINALIZADO'
+          ${veTudo ? '' : `AND EXISTS (
+            SELECT 1 FROM equipes e
+             WHERE e.projeto_id = a.projeto_id AND e.usuario_id = a.responsavel_id
+          )`}
           ORDER BY a.criada_em DESC`
       )
       .all(Number(usuarioId)),
@@ -457,7 +488,22 @@ export const atividades = {
     return true;
   },
 
-  excluir: (id) => banco.prepare('DELETE FROM atividades WHERE id = ?').run(Number(id)),
+  /**
+   * A orientação aponta para a atividade que criou (FK). Sem desfazer o
+   * vínculo antes, o DELETE viola a FK e a atividade vinda de orientação
+   * fica inapagável — a orientação sobrevive, só perde o atalho.
+   */
+  excluir(id) {
+    banco.exec('BEGIN');
+    try {
+      banco.prepare('UPDATE orientacoes SET atividade_id = NULL WHERE atividade_id = ?').run(Number(id));
+      banco.prepare('DELETE FROM atividades WHERE id = ?').run(Number(id));
+      banco.exec('COMMIT');
+    } catch (erro) {
+      banco.exec('ROLLBACK');
+      throw erro;
+    }
+  },
 };
 
 /* ─── Registro de andamento ─────────────────────────────────────────── */
@@ -466,7 +512,7 @@ export const andamentos = {
   doProjeto: (projetoId, limite = 20) =>
     banco
       .prepare(
-        `SELECT a.*, u.nome AS autor_nome, u.papel AS autor_papel
+        `SELECT a.*, a.usuario_id AS autor_id, u.nome AS autor_nome, u.papel AS autor_papel
            FROM andamentos a JOIN usuarios u ON u.id = a.usuario_id
           WHERE a.projeto_id = ?
           ORDER BY a.registrado_em DESC, a.id DESC LIMIT ?`
@@ -487,7 +533,8 @@ export const andamentos = {
 /* ─── Agenda: reunião e visita técnica ──────────────────────────────── */
 
 const SELECT_AGENDA = `
-  SELECT g.*, p.nome AS participante_nome, c.nome AS criador_nome
+  SELECT g.*, p.nome AS participante_nome, c.nome AS criador_nome,
+         g.criada_por AS autor_id, c.nome AS autor_nome
     FROM agenda g
     JOIN usuarios p ON p.id = g.participante_id
     JOIN usuarios c ON c.id = g.criada_por
@@ -533,7 +580,7 @@ export const flags = {
   abertasDoProjeto: (projetoId) =>
     banco
       .prepare(
-        `SELECT f.*, u.nome AS autor_nome
+        `SELECT f.*, f.usuario_id AS autor_id, u.nome AS autor_nome
            FROM flags_cadastro f JOIN usuarios u ON u.id = f.usuario_id
           WHERE f.projeto_id = ? AND f.resolvido_em IS NULL
           ORDER BY f.criado_em`

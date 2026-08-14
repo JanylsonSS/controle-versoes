@@ -1,36 +1,31 @@
 /* ══════════════════════════════════════════════════════════════════════
- * Auxiliares comuns às verificações.
+ * Auxiliares comuns às verificações da API.
  *
- * Os scripts sobem contra um servidor rodando e conferem o comportamento
- * pela porta — do mesmo jeito que uma pessoa usaria. Não há framework de
- * teste porque não há dependências no projeto (ver PARA-DESENVOLVEDORES.md).
+ * Os scripts falam com o servidor pela porta, em JSON — do mesmo jeito
+ * que o frontend em React fala. Não há framework de teste porque não há
+ * dependências no projeto (ver PARA-DESENVOLVEDORES.md).
  *
- * O `executar.mjs` cuida de subir o servidor num banco separado. Se quiser
- * rodar um script à mão, ele fala com http://localhost:3000 por padrão —
- * ou com a porta que estiver em PORTA.
+ * O `executar.mjs` sobe o servidor num banco separado. Para rodar um
+ * script à mão: suba o servidor numa janela e rode o script noutra.
  * ══════════════════════════════════════════════════════════════════════ */
 
 export const BASE = `http://localhost:${process.env.PORTA || 3000}`;
 
-/**
- * Quem é quem, na ordem em que o seed cria as pessoas.
- * No protótipo a sessão é só um cookie com o id — não há senha.
- */
+/** Quem é quem, na ordem em que o seed cria as pessoas. */
 export const COMO = {
-  alvaro: 'usuario_id=1', // Engenharia — é por onde a demonstração começa
-  luiza: 'usuario_id=2', // Engenharia
-  lya: 'usuario_id=3', // Arquitetura
-  vanessa: 'usuario_id=4', // Arquitetura
-  rafaela: 'usuario_id=5', // Estágio — só consulta
-  micael: 'usuario_id=6', // Orçamento — só consulta
-  thayna: 'usuario_id=7', // Coordenação — cadastra, publica e aprova
-  matheus: 'usuario_id=8', // Direção — idem
+  alvaro: 1,   // Engenharia — o sistema abre como ele
+  luiza: 2,    // Engenharia
+  lya: 3,      // Arquitetura
+  vanessa: 4,  // Arquitetura
+  rafaela: 5,  // Estágio — só consulta
+  micael: 6,   // Orçamento — só consulta
+  thayna: 7,   // Coordenação — cadastra, publica, aprova, marca para outros
+  matheus: 8,  // Direção — idem
 };
 
 let falhas = 0;
 let total = 0;
 
-/** Uma verificação. `condicao` verdadeira passa. */
 export function ok(nome, condicao, detalhe = '') {
   total += 1;
   if (!condicao) falhas += 1;
@@ -41,7 +36,6 @@ export function secao(titulo) {
   console.log(`\n${titulo}\n`);
 }
 
-/** Encerra com código de saída — é o que o executar.mjs lê. */
 export function encerrar() {
   console.log(
     falhas ? `\n${falhas} de ${total} FALHARAM\n` : `\n${total} verificações, todas passaram.\n`
@@ -49,39 +43,27 @@ export function encerrar() {
   process.exit(falhas ? 1 : 0);
 }
 
-/* ─── Conversar com o sistema ───────────────────────────────────────── */
+/* ─── Falar com a API ───────────────────────────────────────────────── */
 
-export const pegar = async (rota, cookie) =>
-  (await fetch(BASE + rota, { headers: { cookie } })).text();
-
-export const status = async (rota, cookie) =>
-  (await fetch(BASE + rota, { headers: { cookie } })).status;
-
-export const resposta = (rota, cookie) => fetch(BASE + rota, { headers: { cookie } });
-
-/** Formulário comum. `dados` pode repetir chave passando um array de pares. */
-export const form = (rota, cookie, dados) =>
-  fetch(BASE + rota, {
-    method: 'POST',
-    headers: { cookie, 'content-type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(dados),
-    redirect: 'manual',
+/**
+ * Chama a API como uma pessoa. Devolve { status, dados }.
+ *   api('GET', '/api/projetos', COMO.alvaro)
+ *   api('POST', '/api/agenda', COMO.thayna, { tipo: 'REUNIAO', ... })
+ */
+export async function api(metodo, rota, usuarioId, corpo) {
+  const resposta = await fetch(BASE + rota, {
+    method: metodo,
+    headers: {
+      cookie: `usuario_id=${usuarioId}`,
+      ...(corpo !== undefined ? { 'content-type': 'application/json' } : {}),
+    },
+    body: corpo !== undefined ? JSON.stringify(corpo) : undefined,
   });
-
-/** Formulário com arquivo — é como as revisões são publicadas de verdade. */
-export const enviarArquivo = (rota, cookie, campos, arquivo) => {
-  const fd = new FormData();
-  for (const [chave, valor] of Object.entries(campos)) fd.append(chave, valor);
-  if (arquivo) {
-    fd.append(
-      'arquivo',
-      new File([Buffer.from(arquivo.conteudo ?? '%PDF-1.4 exemplo')], arquivo.nome, {
-        type: arquivo.tipo ?? 'application/pdf',
-      })
-    );
+  let dados = null;
+  try {
+    dados = await resposta.json();
+  } catch {
+    /* respostas sem corpo */
   }
-  return fetch(BASE + rota, { method: 'POST', headers: { cookie }, body: fd, redirect: 'manual' });
-};
-
-/** Tira as etiquetas do HTML, para conferir texto sem depender da marcação. */
-export const semHtml = (html) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return { status: resposta.status, dados };
+}

@@ -11,21 +11,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CAMINHO_BANCO, PASTA_ARQUIVOS } from '../config.js';
+import { CAMINHO_BANCO } from '../config.js';
 
 const em = (texto) => new Date(texto).toISOString();
 
-/** Segunda-feira desta semana, para a agenda cair sempre "na semana atual". */
-function segundaDestaSemana(hoje = new Date()) {
-  const d = new Date(hoje);
-  const diaDaSemana = (d.getDay() + 6) % 7; // 0 = segunda
-  d.setDate(d.getDate() - diaDaSemana);
-  return d;
-}
-
-const diaDaSemanaAtual = (deslocamento) => {
-  const d = segundaDestaSemana();
-  d.setDate(d.getDate() + deslocamento);
+/* A agenda do seed é marcada a partir de HOJE, para a demonstração nunca
+ * abrir com o calendário e as notificações vazios — não importa em que
+ * dia da semana ela aconteça. */
+const daquiADias = (n) => {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
   return d.toISOString().slice(0, 10);
 };
 
@@ -232,22 +227,22 @@ async function popular() {
    * Marcada relativa a hoje, para o calendário da tela inicial nunca
    * aparecer vazio na demonstração. */
   agenda.criar({
-    tipo: 'REUNIAO', dia: diaDaSemanaAtual(1), hora: '09:00',
+    tipo: 'REUNIAO', dia: daquiADias(1), hora: '09:00',
     descricao: 'Reunião com a prefeitura sobre o piso da Praça do Ginásio. Com Thayna e Lya.',
     participanteId: alvaro, criadaPor: thayna,
   });
   agenda.criar({
-    tipo: 'VISITA_TECNICA', dia: diaDaSemanaAtual(2), hora: '14:30',
+    tipo: 'VISITA_TECNICA', dia: daquiADias(2), hora: '14:30',
     descricao: 'Visita ao trecho leste da pavimentação para conferir o meio-fio executado.',
     participanteId: alvaro, criadaPor: alvaro,
   });
   agenda.criar({
-    tipo: 'REUNIAO', dia: diaDaSemanaAtual(3), hora: '10:00',
+    tipo: 'REUNIAO', dia: daquiADias(1), hora: '10:00',
     descricao: 'Alinhamento do orçamento da Câmara com o Micael. Projeto CAM-002.',
     participanteId: micael, criadaPor: thayna,
   });
   agenda.criar({
-    tipo: 'VISITA_TECNICA', dia: diaDaSemanaAtual(4), hora: '08:00',
+    tipo: 'VISITA_TECNICA', dia: daquiADias(3), hora: '08:00',
     descricao: 'Vistoria da UBS Centro com a vigilância sanitária.',
     participanteId: lya, criadaPor: thayna,
   });
@@ -260,7 +255,6 @@ function apagarTudo() {
     for (const sufixo of ['', '-wal', '-shm']) {
       fs.rmSync(`${CAMINHO_BANCO}${sufixo}`, { force: true });
     }
-    fs.rmSync(PASTA_ARQUIVOS, { recursive: true, force: true });
   } catch (erro) {
     if (erro.code === 'EPERM' || erro.code === 'EBUSY') {
       console.error(
