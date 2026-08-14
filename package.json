@@ -11,6 +11,8 @@
     "start": "node servidor.js",
     "recomecar": "node src/persistencia/seed.js --recriar",
     "test": "node verificacao/executar.mjs",
-    "verificar": "node verificacao/executar.mjs"
+    "verificar": "node verificacao/executar.mjs",
+    "app": "npm --prefix frontend run dev",
+    "app:build": "npm --prefix frontend run build"
   }
 }

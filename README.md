@@ -1,15 +1,19 @@
 # controle-versoes (Promav)
 
-> ⚠️ **EM MIGRAÇÃO (13/08/2026).** O sistema está sendo reescrito: o domínio
-> mudou de "revisões numeradas de arquivo" para **orientações** (mudança com
-> título, data, descrição e responsável, que vira atividade sozinha), e a
-> camada de telas HTML foi substituída por uma **API JSON** (`src/api/`) que
-> servirá um frontend em **React** (passo 2, ainda não construído).
+> ⚠️ **EM MIGRAÇÃO (13–14/08/2026), passo 2 concluído.** O domínio virou
+> **orientações** (mudança com título, data, descrição e responsável, que
+> vira atividade sozinha), a camada web é uma **API JSON** (`src/api/`) e o
+> frontend é **React + Vite** (`frontend/`), com o visual do modelo Promav.
 >
-> **O que funciona hoje:** `node servidor.js` sobe a API em `/api/*` com uma
-> página provisória na raiz. `npm test` roda as verificações da API.
-> **O que este README ainda descreve errado:** as seções sobre telas — elas
-> descrevem a interface antiga e serão reescritas quando o React entrar.
+> **Como rodar hoje:**
+> ```
+> npm run app:build     # compila o frontend para dist/ (1ª vez: npm install em frontend/)
+> node servidor.js      # sobe tudo em http://localhost:3000
+> ```
+> Para desenvolver o frontend com recarga automática: `npm run app` (Vite em
+> :5173, com a API em :3000 rodando ao lado). `npm test` verifica a API.
+> **As seções antigas deste README sobre telas HTML seguem desatualizadas** e
+> serão reescritas ao fim da migração.
 
 Sistema de gestão de projetos de uma construtora de 8 pessoas. O nome exibido
 ("Promav") mora num único lugar: `NOME_EXIBICAO` em [src/config.js](src/config.js).
