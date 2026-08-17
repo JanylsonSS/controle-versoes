@@ -200,12 +200,13 @@ mudança deveria esperar mesmo?
 ## Bloco 9 — O que o sistema NÃO faz (obrigatório)
 
 > "Para ser honesto: **não tem senha** — o seletor é do protótipo; o login
-> Google espera a hospedagem. **O aviso não sai por e-mail ainda** — o texto
-> está pronto, falta o canal. **Roda no meu computador**, sem backup
-> automático — e o GitHub não é backup do banco. **Celular ficou para
-> depois** — decisão nossa, foco no escritório. E **o registro de retrabalho
-> saiu do sistema** — aquela medição de 'quanto custou executar errado' não
-> existe mais."
+> Google espera a hospedagem (toda troca fica registrada, mas registrar não é
+> impedir). **O aviso não sai por e-mail ainda** — o texto está pronto, falta
+> o canal. **Roda no meu computador** — o backup local é automático, a cada
+> 6 horas, mas ainda não sai desta máquina: o destino no Drive ou a
+> hospedagem resolvem isso. **Celular ficou para depois** — decisão nossa,
+> foco no escritório. E **o registro de retrabalho saiu do sistema** —
+> aquela medição de 'quanto custou executar errado' não existe mais."
 
 **P15.** ⚠️ **A pergunta para a direção:** as metas do trimestre eram medidas
 pelo retrabalho. Sem essa medição no sistema, as metas mudam, ou ela volta de

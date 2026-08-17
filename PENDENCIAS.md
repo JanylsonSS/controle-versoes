@@ -103,7 +103,7 @@ Três coisas esperam por essa decisão:
    aprovações). Sem atualização "ao vivo" — para 8 pessoas, recarregar na
    navegação basta.
 5. **O frontend tem só o smoke test** (6 cenários Playwright desde 17/08:
-   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 193
+   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 200
    verificações cobrem API + backup. Cobertura decente do frontend continua
    decisão do time de TI.
 6. **Sem numeração visível de orientação.** Nem "nº 7": o histórico ordena por
@@ -150,3 +150,6 @@ Três coisas esperam por essa decisão:
 - Filtros da listagem por tipo e local (o pedido original menciona; a busca
   por nome já existe e os campos já vêm no JSON).
 - Notificação de dúvida em aberto (ver Parte 5.5).
+- Uma tela (ou rota) para ler o rastro das trocas de sessão — hoje a tabela
+  `trocas_de_sessao` só se lê abrindo o SQLite na mão (e o campo `quando`
+  está em UTC: 21h30 de terça em Fortaleza aparece como quarta).

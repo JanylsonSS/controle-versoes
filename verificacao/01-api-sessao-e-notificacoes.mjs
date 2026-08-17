@@ -38,14 +38,41 @@ ok('pessoa inexistente é recusada', r.status === 400);
 {
   const { DatabaseSync } = await import('node:sqlite');
   const { CAMINHO_BANCO } = await import('../src/config.js');
-  let leitura;
-  try { leitura = new DatabaseSync(CAMINHO_BANCO, { readOnly: true }); }
-  catch { leitura = new DatabaseSync(CAMINHO_BANCO); }
-  const troca = leitura.prepare('SELECT * FROM trocas_de_sessao ORDER BY id DESC LIMIT 1').get();
-  leitura.close();
-  ok('a troca ficou registrada (quem era → quem virou)',
-     Boolean(troca) && troca.de_usuario_id === COMO.alvaro && troca.para_usuario_id === COMO.lya);
+  const lerUltimaTroca = () => {
+    let leitura;
+    try { leitura = new DatabaseSync(CAMINHO_BANCO, { readOnly: true }); }
+    catch { leitura = new DatabaseSync(CAMINHO_BANCO); }
+    const troca = leitura.prepare('SELECT * FROM trocas_de_sessao ORDER BY id DESC LIMIT 1').get();
+    leitura.close();
+    return troca;
+  };
+
+  // O POST lá de cima veio SEM cookie: o rastro não pode inventar que o
+  // Álvaro (fallback) trocou — "de" fica nulo, que é a verdade.
+  let troca = lerUltimaTroca();
+  ok('troca sem cookie registra "de" nulo (não culpa o fallback)',
+     Boolean(troca) && troca.de_usuario_id === null && troca.para_usuario_id === COMO.lya);
   ok('com o endereço de onde veio', typeof troca?.ip === 'string' && troca.ip.length > 0);
+
+  // Com cookie assinado, o "de" é quem a requisição prova ser.
+  await api('POST', '/api/sessao', COMO.alvaro, { usuario_id: COMO.vanessa });
+  troca = lerUltimaTroca();
+  ok('troca com cookie válido registra quem era → quem virou',
+     Boolean(troca) && troca.de_usuario_id === COMO.alvaro && troca.para_usuario_id === COMO.vanessa);
+}
+
+secao('2b. O cookie não se forja');
+{
+  const forjado = await fetch(`${BASE}/api/sessao`, {
+    headers: { cookie: 'usuario_id=8' }, // "quero ser a direção", sem assinatura
+  });
+  const dados = await forjado.json();
+  ok('id em texto puro NÃO vira a direção — cai no padrão (Álvaro)',
+     dados.usuario.nome === 'Álvaro Abrantes');
+  const rabiscado = await fetch(`${BASE}/api/sessao`, {
+    headers: { cookie: 'usuario_id=8.0000000000000000000000000000000000' },
+  });
+  ok('assinatura errada também não', (await rabiscado.json()).usuario.nome === 'Álvaro Abrantes');
 }
 
 secao('3. A API recusa o que não é JSON');

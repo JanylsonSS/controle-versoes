@@ -27,6 +27,10 @@ instale as dependências do frontend:
 npm --prefix frontend install
 ```
 
+(Para rodar o `npm run test:ui` nessa máquina, uma vez só:
+`npx --prefix frontend playwright install chromium` — baixa o navegador do
+teste.)
+
 Depois, para usar o sistema:
 
 ```bash
@@ -47,7 +51,7 @@ Para recomeçar do zero (**pare o servidor antes**, Ctrl+C):
 npm run recomecar
 ```
 
-Para conferir que o servidor está inteiro — 193 verificações automáticas
+Para conferir que o servidor está inteiro — 200 verificações automáticas
 (API + backup), sem tocar nos dados da demonstração:
 
 ```bash
@@ -172,7 +176,7 @@ ferramentas/           backup manual e o servidor do smoke test
 frontend/              o aplicativo React (Vite)
   src/telas/           Início, Projeto, Quadro, Aprovações
   smoke/               os 6 cenários de navegador (npm run test:ui)
-verificacao/           as 193 verificações (npm test)
+verificacao/           as 200 verificações (npm test)
 dados/                 criado ao rodar: banco.db e backups/
 dist/                  o build do frontend (gerado; fora do git)
 ```
@@ -195,9 +199,11 @@ Ditos abertamente, para ninguém confundir protótipo com sistema pronto:
 
 - **Não há senha.** O "entrar como" existe para demonstrar os papéis. O login
   com a conta Google está decidido e espera a hospedagem (ver PENDENCIAS).
-  Enquanto isso, toda troca de sessão fica registrada (quem era, quem virou,
-  de que endereço), virar quem aprova pede confirmação, e o cookie morre com
-  o navegador — mas ciência e aval valem como fluxo, não como prova.
+  Enquanto isso, o cookie de sessão é **assinado** (não dá para forjar uma
+  identidade sem passar pela troca, que fica registrada: quem era, quem
+  virou, de que endereço), virar quem aprova pede confirmação, e o cookie
+  morre com o navegador (atenção: o "continuar de onde parei" do Chrome pode
+  restaurá-lo). Ciência e aval valem como fluxo, não como prova.
 - **O aviso não sai por e-mail ainda.** O texto do modelo e o remetente já
   estão no código; o envio depende da hospedagem.
 - **Roda numa máquina só.** O backup local é automático (a cada 6 horas, em

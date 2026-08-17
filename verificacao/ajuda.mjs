@@ -11,6 +11,11 @@
 
 export const BASE = `http://localhost:${process.env.PORTA || 3000}`;
 
+/* O cookie de sessão é ASSINADO (src/api/assinatura.js) — um id em
+ * texto puro cai no fallback. As suítes assinam com o mesmo segredo da
+ * instalação de teste (PASTA_DADOS, criado pelo servidor ao subir). */
+import { valorDeSessao } from '../src/api/assinatura.js';
+
 /** Quem é quem, na ordem em que o seed cria as pessoas. */
 export const COMO = {
   alvaro: 1,   // Engenharia — o sistema abre como ele
@@ -54,7 +59,7 @@ export async function api(metodo, rota, usuarioId, corpo) {
   const resposta = await fetch(BASE + rota, {
     method: metodo,
     headers: {
-      cookie: `usuario_id=${usuarioId}`,
+      cookie: `usuario_id=${valorDeSessao(usuarioId)}`,
       ...(corpo !== undefined ? { 'content-type': 'application/json' } : {}),
     },
     body: corpo !== undefined ? JSON.stringify(corpo) : undefined,

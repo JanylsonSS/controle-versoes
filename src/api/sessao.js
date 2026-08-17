@@ -14,7 +14,7 @@ import { rotuloDoPapel, podePublicar, podeCadastrarProjeto } from '../regras/pap
 import { ehAprovador } from '../regras/aprovacao.js';
 import { estaAtrasado } from '../regras/ciencia.js';
 import { veTodosOsProjetos } from '../regras/visibilidade.js';
-import { ErroApi, definirSessao, enderecoDe } from './http.js';
+import { ErroApi, definirSessao, enderecoDe, usuarioAutenticado } from './http.js';
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 
@@ -48,11 +48,14 @@ export const rotasDeSessao = [
   // Troca o "entrando como". Sai junto com o login de verdade.
   // A troca é livre, mas nunca é muda: fica registrada com quem era,
   // quem virou e o endereço de onde veio (tabela trocas_de_sessao).
-  ['POST', '/api/sessao', ({ req, res, usuario, corpo }) => {
+  ['POST', '/api/sessao', ({ req, res, corpo }) => {
     const escolhido = usuarios.porId(Number(corpo.usuario_id));
     if (!escolhido) throw new ErroApi(400, 'Essa pessoa não existe.');
     trocas.registrar({
-      deUsuarioId: usuario.id,
+      // Só o que a requisição PROVA: sem cookie válido, "de" fica nulo.
+      // O fallback (Álvaro) não entra aqui — registraria uma pessoa que
+      // talvez nunca tenha estado naquele navegador.
+      deUsuarioId: usuarioAutenticado(req)?.id ?? null,
       paraUsuarioId: escolhido.id,
       ip: enderecoDe(req),
     });

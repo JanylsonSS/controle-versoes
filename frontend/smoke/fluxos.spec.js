@@ -16,11 +16,21 @@ test.describe.configure({ mode: 'serial' });
 const TITULO_DA_MUDANCA = 'Smoke: muda o meio-fio do trecho leste';
 
 /** Troca o "entrar como" pela lateral. Isolado num helper de propósito:
- *  quando o login Google entrar, só este lugar do smoke muda. */
+ *  quando o login Google entrar, só este lugar do smoke muda.
+ *
+ *  Espera o POST /api/sessao de verdade e confere o VALUE do select —
+ *  toContainText num <select> enxerga o texto de TODAS as options e
+ *  passaria sempre (a revisão adversarial provou). */
 async function entrarComo(pagina, nome, { aprova = false } = {}) {
   if (aprova) pagina.once('dialog', (d) => d.accept()); // o "tem certeza?"
-  await pagina.locator('.lateral-rodape select').selectOption({ label: nome });
-  await expect(pagina.locator('.lateral-rodape select')).toContainText(nome.split(' — ')[0]);
+  const seletor = pagina.locator('.lateral-rodape select');
+  const valor = await seletor.locator('option', { hasText: nome }).getAttribute('value');
+  const trocou = pagina.waitForResponse(
+    (r) => r.url().includes('/api/sessao') && r.request().method() === 'POST',
+  );
+  await seletor.selectOption(valor);
+  await trocou;
+  await expect(seletor).toHaveValue(valor);
 }
 
 test('a tela inicial abre inteira: marca, notificações, projetos e semana', async ({ page }) => {
@@ -96,7 +106,10 @@ test('o quadro: clique abre a janela; arrastar move de coluna', async ({ page })
   await expect(page.locator('dialog[open]')).toContainText(TITULO_DA_MUDANCA);
   await page.locator('dialog[open]').getByRole('button', { name: 'Cancelar' }).click();
 
-  // arrastar (acima do limiar) = mover para "Em execução"
+  // arrastar (acima do limiar) = mover para "Em execução".
+  // boundingBox é relativo à viewport: garante os dois na tela antes,
+  // senão o drop cai fora e o quadro ignora EM SILÊNCIO.
+  await cartao.scrollIntoViewIfNeeded();
   const origem = await cartao.boundingBox();
   const destino = await page.locator('section[data-coluna="EM_EXECUCAO"]').boundingBox();
   await page.mouse.move(origem.x + origem.width / 2, origem.y + origem.height / 2);
@@ -121,6 +134,9 @@ test('a agenda: clicar no dia, marcar, e o compromisso aparecer na semana', asyn
     .fill('Smoke: vistoria do meio-fio no trecho leste. Projeto PAV-001.');
   await janela.getByRole('button', { name: 'Marcar', exact: true }).click();
 
-  await expect(page.locator('.calendario-dia.hoje')).toContainText('08:30');
-  await expect(page.locator('.calendario-dia.hoje')).toContainText('Visita');
+  // A grade da semana, não a célula .hoje: se a rodada cruzar a
+  // meia-noite, a classe .hoje migra de célula e o dado certo estaria
+  // na célula "de ontem" — a semana inteira é o alvo estável.
+  await expect(page.locator('.calendario-grade')).toContainText('08:30');
+  await expect(page.locator('.calendario-grade')).toContainText('Visita');
 });

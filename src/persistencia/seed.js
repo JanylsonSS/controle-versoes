@@ -256,7 +256,9 @@ async function apagarTudo() {
   // num banco que já tinha uso real.
   if (fs.existsSync(CAMINHO_BANCO)) {
     const { backupSeguro } = await import('./backup.js');
-    backupSeguro('despedida do recomeçar');
+    // nome próprio: despedida-*.db fica FORA da rotação — em dias de
+    // backup 6-horário, uma despedida contada como rotina seria apagada.
+    backupSeguro('despedida do recomeçar', { nome: 'despedida' });
   }
   try {
     for (const sufixo of ['', '-wal', '-shm']) {

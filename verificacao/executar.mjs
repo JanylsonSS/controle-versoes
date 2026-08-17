@@ -35,7 +35,10 @@ const RAIZ = path.resolve(AQUI, '..');
 
 const PORTA = process.env.PORTA_VERIFICACAO || '3999';
 const PASTA_DADOS = 'dados-verificacao';
-const AMBIENTE = { ...process.env, PORTA, PASTA_DADOS };
+// PASTA_BACKUP_ESPELHO vazia É segurança: cada servidor de suíte faz
+// backup ao subir, e snapshot de banco de teste jamais pode cair (e
+// rotacionar!) no espelho de verdade da máquina.
+const AMBIENTE = { ...process.env, PORTA, PASTA_DADOS, PASTA_BACKUP_ESPELHO: '' };
 
 const SCRIPTS = fs
   .readdirSync(AQUI)

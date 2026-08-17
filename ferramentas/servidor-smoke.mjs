@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 
 process.env.PORTA = process.env.PORTA_SMOKE || '3998';
 process.env.PASTA_DADOS = 'dados-smoke';
+// Banco de teste jamais chega ao espelho de verdade (ver backup.js).
+process.env.PASTA_BACKUP_ESPELHO = '';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 fs.rmSync(path.join(RAIZ, 'dados-smoke'), { recursive: true, force: true });

@@ -48,7 +48,7 @@ npm run app:build               # compila o frontend para dist/
 node servidor.js                # sobe tudo em :3000
 npm run app                     # dev do frontend (Vite :5173 + proxy /api)
 npm run recomecar               # recria os dados de teste (com backup antes)
-npm test                        # as 193 verificações (API + backup)
+npm test                        # as 200 verificações (API + backup)
 npm run test:ui                 # o smoke do frontend (Playwright, build real)
 npm run backup                  # snapshot do banco agora → dados/backups/
 ```
@@ -285,7 +285,7 @@ Duas regras finas:
 |---|---|
 | **Login de verdade** (conta Google) | precisa do endereço fixo para registrar no Google Cloud → depende da hospedagem. As contas são **Gmail comuns**, não Workspace: a autorização será uma lista de 8 contas mantida à mão |
 | **Envio do e-mail de aviso** | modelo e remetente prontos em `aviso-email.js`; o envio depende da hospedagem |
-| **Backup automático** | ⚠️ o GitHub não cobre: guarda o código, não `dados/banco.db`. Precisa de cópia periódica para o Drive |
+| **O destino do backup fora do disco** | a cópia local existe (a cada 6 h + despedida do `recomecar` — ver §2); falta apontar `PASTA_BACKUP_ESPELHO` para a pasta do Drive na máquina, ou a hospedagem. O GitHub não cobre: guarda o código, não `dados/banco.db` |
 | **Celular/canteiro** | decisão de 13/08: foco no desktop. O layout não quebra, mas nada foi desenhado para o dedo |
 | **Medição de retrabalho** | o R11 foi **removido** no pivô — ver o aviso em REQUISITOS-COBERTOS.md |
 
@@ -342,7 +342,7 @@ distância que separa clique de arraste.
 npm test
 ```
 
-**193 verificações em 7 suítes**, contra um servidor que o executor sobe em
+**200 verificações em 7 suítes**, contra um servidor que o executor sobe em
 **porta 3999 com banco descartável** (`dados-verificacao/`) — rodar os testes
 nunca toca nos dados da demonstração.
 
@@ -354,14 +354,18 @@ nunca toca nos dados da demonstração.
 | `03-api-orientacoes` | o ato triplo, edição reabrindo ciência, aval sem portão |
 | `04-api-atividades` | quadro, datas automáticas, PATCH parcial, FK do excluir |
 | `05-api-agenda` | semana, marcar para si/outros, validação de calendário |
+| `06-backup` | snapshot com o -wal, rotação × despedida, espelho (`// sem-servidor`) |
 
 Cada bug corrigido em revisão tem uma verificação com o nome do bug — se
 alguém reintroduzir, o teste diz qual foi.
 
-**O frontend não tem teste automatizado** (decisão de custo desta fase). A
-verificação é manual: `npm run app:build && node servidor.js` e percorrer
-início → projeto → atividades → aprovações com dois usuários (Álvaro e
-Thayna). O que conferir está no roteiro de [APRESENTACAO.md](APRESENTACAO.md).
+**O frontend tem o smoke** (`npm run test:ui`): compila o build e roda 6
+cenários Playwright — publicar com aval, ciência, aprovação, o arrastar do
+quadro, a agenda — num servidor próprio (porta 3998, banco `dados-smoke/`
+descartável). Numa máquina nova, os navegadores do Playwright se instalam com
+`npx --prefix frontend playwright install chromium`. Cobertura além do smoke
+continua decisão do time de TI; para conferência manual, o roteiro de
+[APRESENTACAO.md](APRESENTACAO.md).
 
 ### Escrevendo uma verificação nova
 

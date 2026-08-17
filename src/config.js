@@ -28,7 +28,11 @@ export const CAMINHO_BANCO = path.join(PASTA_DADOS, 'banco.db');
  * O espelho é um segundo destino FORA do disco — ex.: a pasta do Google
  * Drive para desktop — e fica vazio até alguém apontá-lo. */
 export const PASTA_BACKUPS = path.join(PASTA_DADOS, 'backups');
-export const PASTA_BACKUP_ESPELHO = process.env.PASTA_BACKUP_ESPELHO || '';
+// resolve(RAIZ, ...) como a PASTA_DADOS: um valor relativo não pode
+// depender de ONDE o comando foi rodado, senão o espelho fragmenta.
+export const PASTA_BACKUP_ESPELHO = process.env.PASTA_BACKUP_ESPELHO
+  ? path.resolve(RAIZ, process.env.PASTA_BACKUP_ESPELHO)
+  : '';
 export const HORAS_ENTRE_BACKUPS = 6;
 export const BACKUPS_MANTIDOS = 40;
 

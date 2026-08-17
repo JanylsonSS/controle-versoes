@@ -13,6 +13,7 @@
  * ══════════════════════════════════════════════════════════════════════ */
 
 import { usuarios } from '../persistencia/repositorio.js';
+import { usuarioDoValor, valorDeSessao } from './assinatura.js';
 
 /** Erro que vira resposta JSON com status. Lançar em qualquer handler. */
 export class ErroApi extends Error {
@@ -41,37 +42,53 @@ export function json(res, status, corpo) {
 /* ─── Sessão ────────────────────────────────────────────────────────── */
 
 /**
+ * Quem a requisição PROVA ser: o cookie assinado, verificado. Devolve
+ * null quando não há cookie, quando a assinatura não bate (forjado) ou
+ * quando é do formato antigo sem assinatura — os três casos em que o
+ * sistema NÃO sabe quem estava ali.
+ */
+export function usuarioAutenticado(req) {
+  const bruto = req.headers.cookie || '';
+  let valor = null;
+  for (const parte of bruto.split(';')) {
+    const i = parte.indexOf('=');
+    if (i > 0 && parte.slice(0, i).trim() === 'usuario_id') valor = parte.slice(i + 1).trim();
+  }
+  const id = usuarioDoValor(valor);
+  return id === null ? null : usuarios.porId(id) ?? null;
+}
+
+/**
  * No protótipo não há senha: a sessão é quem está "entrando como", e uma
- * requisição sem cookie (ou com id inválido) cai no primeiro usuário do
- * seed — o sistema ABRE logado de propósito, para a demonstração.
+ * requisição sem cookie válido cai no primeiro usuário do seed — o
+ * sistema ABRE logado de propósito, para a demonstração.
  *
  * Quando o login com a conta Google entrar (ver PENDENCIAS.md), este
  * fallback vira `throw new ErroApi(401, ...)` — não existe mais "abrir
  * como alguém" em produção.
  */
 export function usuarioDaSessao(req) {
-  const bruto = req.headers.cookie || '';
-  let id = null;
-  for (const parte of bruto.split(';')) {
-    const i = parte.indexOf('=');
-    if (i > 0 && parte.slice(0, i).trim() === 'usuario_id') id = Number(parte.slice(i + 1).trim());
-  }
-  return usuarios.porId(id) ?? usuarios.todos()[0];
+  return usuarioAutenticado(req) ?? usuarios.todos()[0];
 }
 
 export function definirSessao(res, usuarioId) {
+  // O valor é ASSINADO (ver assinatura.js): não dá para forjar o cookie
+  // à mão e virar outra pessoa sem passar pela troca registrada.
   // Cookie de SESSÃO, sem Max-Age: fechar o navegador desfaz o "entrar
   // como". Durava 30 dias; encurtado em 17/08/2026 — o acidente típico
   // do piloto é agir dias depois como outra pessoa sem lembrar da troca.
   res.setHeader(
     'set-cookie',
-    `usuario_id=${Number(usuarioId)}; Path=/; HttpOnly; SameSite=Lax`
+    `usuario_id=${valorDeSessao(usuarioId)}; Path=/; HttpOnly; SameSite=Lax`
   );
 }
 
 /** O endereço de quem chamou, para o rastro das trocas de sessão. */
 export function enderecoDe(req) {
-  return req.socket?.remoteAddress ?? null;
+  // Atrás do proxy de uma hospedagem, o socket é o proxy; o cabeçalho
+  // diz o cliente. Em rede local o cabeçalho não vem e vale o socket.
+  const encaminhado = String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim();
+  return encaminhado || req.socket?.remoteAddress || null;
 }
 
 /* ─── Corpo e rotas ─────────────────────────────────────────────────── */

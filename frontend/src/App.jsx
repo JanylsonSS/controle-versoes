@@ -74,7 +74,13 @@ function Lateral() {
       evento.target.value = String(sessao.usuario.id); // o select volta
       return;
     }
-    await api.criar('/api/sessao', { usuario_id: escolhido.id });
+    try {
+      await api.criar('/api/sessao', { usuario_id: escolhido.id });
+    } catch (e) {
+      window.alert(`A troca não deu certo: ${e.message}`);
+      evento.target.value = String(sessao.usuario.id);
+      return;
+    }
     carregarSessao();
   }
 

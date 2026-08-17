@@ -166,9 +166,9 @@ do [PENDENCIAS.md](PENDENCIAS.md):
    fixo de retorno, e esse endereço só existe depois de escolher onde hospedar.
 2. **Envio do e-mail de aviso (R18).** O texto está pronto no código; o canal
    de envio e o endereço do link "abrir no sistema" esperam a decisão.
-3. **O destino final do backup automático.** A cópia periódica local pode (e
-   deve) existir antes; para onde ela desemboca depende de onde o sistema
-   estiver rodando.
+3. **O destino final do backup automático.** A cópia periódica local já
+   existe (a cada 6 horas, dentro do sistema); para onde ela desemboca fora
+   do disco depende de onde o sistema estiver rodando.
 
 ---
 
