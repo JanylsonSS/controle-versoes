@@ -1,8 +1,15 @@
 # Dados de execução: banco e arquivos enviados. Não versionar.
 dados/
 
-# Banco temporário da verificação automática (npm test).
+# Bancos temporários: da verificação automática (npm test), do smoke do
+# frontend (npm run test:ui) e de experimentos locais.
 dados-verificacao/
+dados-smoke/
+scratch-dados-fk/
+
+# Saída do Playwright (npm run test:ui).
+frontend/test-results/
+frontend/playwright-report/
 
 # Configuração local de ferramenta, específica de cada máquina.
 .claude/
