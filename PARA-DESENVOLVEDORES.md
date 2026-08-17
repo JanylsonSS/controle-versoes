@@ -47,9 +47,19 @@ npm --prefix frontend install   # 1ª vez numa máquina nova
 npm run app:build               # compila o frontend para dist/
 node servidor.js                # sobe tudo em :3000
 npm run app                     # dev do frontend (Vite :5173 + proxy /api)
-npm run recomecar               # recria os dados de teste
-npm test                        # as 177 verificações da API
+npm run recomecar               # recria os dados de teste (com backup antes)
+npm test                        # as 193 verificações (API + backup)
+npm run test:ui                 # o smoke do frontend (Playwright, build real)
+npm run backup                  # snapshot do banco agora → dados/backups/
 ```
+
+**Backup e restauração.** O servidor tira um snapshot consistente ao subir e
+a cada 6 horas (`VACUUM INTO`, funciona com o WAL e o servidor no ar —
+`src/persistencia/backup.js`); a rotação mantém os 40 mais novos, e
+`PASTA_BACKUP_ESPELHO` aponta um segundo destino fora do disco (a pasta do
+Google Drive para desktop). **Restaurar**: pare o servidor, copie o snapshot
+escolhido de `dados/backups/` para `dados/banco.db` (apague `banco.db-wal` e
+`banco.db-shm` se existirem) e suba de novo.
 
 O que o Node moderno dá de graça no servidor: `node:sqlite` (sem driver),
 `node:http` (sem Express), template literals. **Não acrescente dependência ao
@@ -67,6 +77,7 @@ src/
     banco.js               conexão, esquema, limpeza do modelo antigo   ┐ únicos
     repositorio.js         todas as consultas                           ┘ com SQL
     seed.js                dados de teste (agenda relativa a HOJE)
+    backup.js              snapshots VACUUM INTO + rotação + espelho
   regras/                  ← as decisões de negócio moram aqui
     papeis.js              quem publica, aprova, cadastra
     visibilidade.js        quem vê qual projeto (R19)
@@ -85,7 +96,12 @@ src/
     atividades.js          quadro, mover, andamentos
     agenda.js              semana, marcar (para si e para outros)
     indice.js              junta as tabelas de rotas
+ferramentas/
+  backup.mjs               npm run backup
+  servidor-smoke.mjs       o servidor que o Playwright sobe (porta 3998)
 frontend/
+  playwright.config.js     npm run test:ui — smoke sobre o build real
+  smoke/fluxos.spec.js     os 6 cenários de navegador
   vite.config.js           proxy /api → :3000; build → ../dist
   src/
     api.js                 o único fetch do app + formatação de datas pt-BR
@@ -118,7 +134,7 @@ verificacao/
 
 ## 4. Modelo de dados
 
-Nove tabelas, todas em `banco.js`:
+Dez tabelas, todas em `banco.js`:
 
 | Tabela | Para quê |
 |---|---|
@@ -131,6 +147,7 @@ Nove tabelas, todas em `banco.js`:
 | `andamentos` | o "commit": o que fiz, dificuldade, dúvida |
 | `agenda` | reunião/visita por pessoa, com quem marcou |
 | `flags_cadastro` | a placa ⚑: quem avisou que um campo do cadastro está errado |
+| `trocas_de_sessao` | o rastro do "entrar como" (quem era, quem virou, IP) enquanto não há login — auditoria, nunca se apaga |
 
 `banco.js` também **dropa** as tabelas do modelo antigo (`revisoes`,
 `incidentes`, `acessos_versao_antiga`) em bancos criados antes do pivô — os
@@ -325,7 +342,7 @@ distância que separa clique de arraste.
 npm test
 ```
 
-**177 verificações em 6 suítes**, contra um servidor que o executor sobe em
+**193 verificações em 7 suítes**, contra um servidor que o executor sobe em
 **porta 3999 com banco descartável** (`dados-verificacao/`) — rodar os testes
 nunca toca nos dados da demonstração.
 

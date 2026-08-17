@@ -47,11 +47,25 @@ Para recomeçar do zero (**pare o servidor antes**, Ctrl+C):
 npm run recomecar
 ```
 
-Para conferir que o servidor está inteiro — 177 verificações automáticas da
-API, sem tocar nos dados da demonstração:
+Para conferir que o servidor está inteiro — 193 verificações automáticas
+(API + backup), sem tocar nos dados da demonstração:
 
 ```bash
 npm test
+```
+
+Para conferir o frontend de verdade — 6 cenários no navegador, sobre o build
+real, num banco descartável:
+
+```bash
+npm run test:ui
+```
+
+Para tirar uma cópia do banco agora (uma sai sozinha a cada 6 horas com o
+servidor no ar, para `dados/backups/`):
+
+```bash
+npm run backup
 ```
 
 ### Para desenvolver o frontend
@@ -126,7 +140,7 @@ protótipo não há senha):
 | Peça | Escolha | Motivo |
 |---|---|---|
 | Servidor | Node.js puro (`node:http`), **zero dependências** | roda em qualquer máquina/hospedagem; não apodrece parado |
-| Banco | SQLite embutido (`node:sqlite`) | um arquivo; backup é copiar o arquivo |
+| Banco | SQLite embutido (`node:sqlite`) | um arquivo; backup automático a cada 6 h (`dados/backups/`) |
 | API | JSON em `/api/*` (30 rotas) | contrato limpo para o frontend e para as verificações |
 | Frontend | **React + Vite** (`frontend/`) | decisão de 13/08/2026, seguindo o modelo visual aprovado; é o padrão que o time de TI vai encontrar no mercado |
 | Visual | a paleta do **logotipo oficial** sobre a estrutura do modelo "Promav App" | preto #201E1F e dourado #A68E71, medidos da imagem do logo; Plus Jakarta Sans |
@@ -154,10 +168,12 @@ src/
     seed.js            dados de teste (o caso da pavimentação)
   regras/              as decisões de negócio, uma por arquivo
   api/                 as 30 rotas JSON, por área
+ferramentas/           backup manual e o servidor do smoke test
 frontend/              o aplicativo React (Vite)
   src/telas/           Início, Projeto, Quadro, Aprovações
-verificacao/           as 177 verificações da API (npm test)
-dados/                 criado ao rodar: banco.db
+  smoke/               os 6 cenários de navegador (npm run test:ui)
+verificacao/           as 193 verificações (npm test)
+dados/                 criado ao rodar: banco.db e backups/
 dist/                  o build do frontend (gerado; fora do git)
 ```
 
@@ -179,11 +195,15 @@ Ditos abertamente, para ninguém confundir protótipo com sistema pronto:
 
 - **Não há senha.** O "entrar como" existe para demonstrar os papéis. O login
   com a conta Google está decidido e espera a hospedagem (ver PENDENCIAS).
+  Enquanto isso, toda troca de sessão fica registrada (quem era, quem virou,
+  de que endereço), virar quem aprova pede confirmação, e o cookie morre com
+  o navegador — mas ciência e aval valem como fluxo, não como prova.
 - **O aviso não sai por e-mail ainda.** O texto do modelo e o remetente já
   estão no código; o envio depende da hospedagem.
-- **Roda numa máquina só, sem backup automático.** O GitHub guarda o código —
-  o banco (`dados/banco.db`) fica fora dele de propósito; o backup precisa ser
-  cópia periódica para o Drive.
+- **Roda numa máquina só.** O backup local é automático (a cada 6 horas, em
+  `dados/backups/`, mais um snapshot de despedida antes do `recomecar`); o
+  que ainda falta é o destino FORA do disco — a pasta do Drive para desktop
+  (variável `PASTA_BACKUP_ESPELHO`) ou a hospedagem.
 - **Os nomes são reais, o histórico é fictício** — montado para a demonstração.
 - **O sistema não mede mais retrabalho.** O registro de incidentes (R11) foi
   removido em 13/08/2026 por decisão de produto — ver o aviso em

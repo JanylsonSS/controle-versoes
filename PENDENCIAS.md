@@ -55,6 +55,16 @@ forma?
 - **O quadro de atividades (R25)** entrou por pedido da coordenação ainda no
   modelo antigo, antes do pivô; o pivô o promoveu a destino automático de
   cada orientação publicada.
+- **Pacote de proteção pré-piloto (17/08/2026):** backup local automático
+  (a cada 6 h + despedida do `recomecar`; falta só o destino fora do disco),
+  rastro de toda troca de sessão (tabela `trocas_de_sessao`), cookie que
+  morre com o navegador, confirmação para virar quem aprova, e smoke test
+  do frontend (6 cenários Playwright, `npm run test:ui`). O repositório
+  está limpo para o push (o banco de experimento saiu do rastreamento);
+  **falta só o responsável autenticar o GitHub e criar o remoto**.
+- ⚠️ **Sem login, ciência e aval valem como fluxo, não como prova**: a
+  sessão é trocável (registrada, mas trocável). Dizer isso à direção antes
+  do piloto; vira prova quando o login (R16) chegar.
 
 ---
 
@@ -70,9 +80,11 @@ Três coisas esperam por essa decisão:
 
 1. **Login com a conta Google (R16)** — precisa do endereço fixo de retorno.
 2. **Envio do e-mail de aviso (R18)** — texto pronto, falta o canal.
-3. **O destino final do backup automático** — a cópia periódica local pode
-   existir antes; para onde ela vai (Drive, serviço) depende de onde o
-   sistema rodar. O GitHub não cobre isso: guarda código, não dados.
+3. **O destino final do backup automático** — a cópia periódica local JÁ
+   existe (a cada 6 h, `dados/backups/`); para onde ela vai fora do disco
+   (a pasta do Drive via `PASTA_BACKUP_ESPELHO`, ou o serviço de
+   hospedagem) depende de onde o sistema rodar. O GitHub não cobre isso:
+   guarda código, não dados.
 
 ---
 
@@ -90,9 +102,10 @@ Três coisas esperam por essa decisão:
 4. **A lateral atualiza a cada troca de tela** (projetos e contador de
    aprovações). Sem atualização "ao vivo" — para 8 pessoas, recarregar na
    navegação basta.
-5. **O frontend não tem teste automatizado.** As 177 verificações cobrem a
-   API; o frontend se verifica manualmente pelo roteiro. Se o time de TI
-   quiser, o caminho natural é Playwright — decisão deles.
+5. **O frontend tem só o smoke test** (6 cenários Playwright desde 17/08:
+   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 193
+   verificações cobrem API + backup. Cobertura decente do frontend continua
+   decisão do time de TI.
 6. **Sem numeração visível de orientação.** Nem "nº 7": o histórico ordena por
    data. Se a equipe sentir falta de um jeito de se referir a uma orientação
    ("aquela de 05/06"), reavaliar.
