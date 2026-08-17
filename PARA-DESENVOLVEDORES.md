@@ -48,7 +48,7 @@ npm run app:build               # compila o frontend para dist/
 node servidor.js                # sobe tudo em :3000
 npm run app                     # dev do frontend (Vite :5173 + proxy /api)
 npm run recomecar               # recria os dados de teste (com backup antes)
-npm test                        # as 218 verificações (API + backup)
+npm test                        # as 223 verificações (API + backup)
 npm run test:ui                 # o smoke do frontend (Playwright, build real)
 npm run backup                  # snapshot do banco agora → dados/backups/
 ```
@@ -219,7 +219,7 @@ Duas regras finas:
 
 ## 7. Contrato da API
 
-30 rotas em `/api/*`. Convenções:
+32 rotas em `/api/*`. Convenções:
 
 - **snake_case do banco direto no JSON** — sem camada de renomeação.
 - **Erro sempre `{ erro: "mensagem legível" }`** com o status certo. As
@@ -344,7 +344,7 @@ distância que separa clique de arraste.
 npm test
 ```
 
-**218 verificações em 8 suítes**, contra um servidor que o executor sobe em
+**223 verificações em 8 suítes**, contra um servidor que o executor sobe em
 **porta 3999 com banco descartável** (`dados-verificacao/`) — rodar os testes
 nunca toca nos dados da demonstração.
 

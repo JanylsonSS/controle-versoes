@@ -131,17 +131,21 @@ banco.exec(`
     registrado_em  TEXT NOT NULL
   );
 
-  -- Agenda: reunião e visita técnica, por pessoa. A coordenação marca
-  -- para os outros; cada um marca para si.
+  -- Agenda: reunião e visita técnica, por pessoa — um compromisso com
+  -- vários participantes vira uma linha por pessoa. Desde 17/08 TODOS
+  -- marcam (para si e para colegas); o controle é transparência: quando
+  -- ninguém da coordenação participa, ela ganha uma linha AUTOMÁTICA e
+  -- fica ciente (ver regras/notificacao.js).
   CREATE TABLE IF NOT EXISTS agenda (
-    id              INTEGER PRIMARY KEY,
-    tipo            TEXT NOT NULL CHECK (tipo IN ('REUNIAO','VISITA_TECNICA')),
-    dia             TEXT NOT NULL,
-    hora            TEXT,
-    descricao       TEXT NOT NULL,
-    participante_id INTEGER NOT NULL REFERENCES usuarios(id),
-    criada_por      INTEGER NOT NULL REFERENCES usuarios(id),
-    criada_em       TEXT NOT NULL
+    id                       INTEGER PRIMARY KEY,
+    tipo                     TEXT NOT NULL CHECK (tipo IN ('REUNIAO','VISITA_TECNICA')),
+    dia                      TEXT NOT NULL,
+    hora                     TEXT,
+    descricao                TEXT NOT NULL,
+    participante_id          INTEGER NOT NULL REFERENCES usuarios(id),
+    criada_por               INTEGER NOT NULL REFERENCES usuarios(id),
+    criada_em                TEXT NOT NULL,
+    incluido_automaticamente INTEGER NOT NULL DEFAULT 0
   );
 
   -- Quem avisa a coordenação de que o cadastro do projeto está errado.
@@ -198,6 +202,15 @@ const colunasDeOrientacoes = banco
   .map((c) => c.name);
 if (!colunasDeOrientacoes.includes('origem')) {
   banco.exec('ALTER TABLE orientacoes ADD COLUMN origem TEXT');
+}
+
+// 17/08/2026: a linha automática da coordenação na agenda.
+const colunasDeAgenda = banco
+  .prepare("SELECT name FROM pragma_table_info('agenda')")
+  .all()
+  .map((c) => c.name);
+if (!colunasDeAgenda.includes('incluido_automaticamente')) {
+  banco.exec('ALTER TABLE agenda ADD COLUMN incluido_automaticamente INTEGER NOT NULL DEFAULT 0');
 }
 
 /** Verdadeiro quando o banco ainda não tem dados (usado para popular o seed). */

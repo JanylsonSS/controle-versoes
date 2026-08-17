@@ -87,7 +87,11 @@ function Notificacoes() {
                 {c.hora ? ` às ${c.hora}` : ''}
               </span>
               <span className="meta">{c.descricao}</span>
-              <span className="meta">Marcada por {c.criador_nome}</span>
+              <span className="meta">
+                Marcada por {c.criador_nome}
+                {Boolean(c.incluido_automaticamente) &&
+                  ' · você foi incluído(a) automaticamente, para a coordenação ficar ciente'}
+              </span>
             </li>
           ))}
         </ul>
@@ -219,8 +223,8 @@ function Calendario() {
         </div>
       </div>
       <p className="ajuda">
-        Clique num dia para marcar uma reunião ou visita técnica.
-        {sessao.pode.marcar_para_outros && ' Como coordenação, você também marca para as outras pessoas.'}
+        Clique num dia para marcar uma reunião ou visita técnica — para você
+        e para quem mais participar.
       </p>
 
       <div className="calendario-grade">
@@ -275,8 +279,8 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
         dia,
         hora: form.get('hora') || null,
         descricao: form.get('descricao'),
+        participante_ids: form.getAll('participantes').map(Number),
       };
-      if (sessao.pode.marcar_para_outros) corpo.participante_id = Number(form.get('participante_id'));
       await api.criar('/api/agenda', corpo);
       aoMudar();
       aoFechar();
@@ -309,7 +313,11 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
                 {c.hora ? `${c.hora} — ` : ''}{c.tipo === 'REUNIAO' ? 'Reunião' : 'Visita técnica'}
               </span>
               <span className="meta">{c.descricao}</span>
-              <span className="meta">Marcada por {c.criador_nome}</span>
+              <span className="meta">
+                Marcada por {c.criador_nome}
+                {Boolean(c.incluido_automaticamente) &&
+                  ' · você foi incluído(a) automaticamente, para a coordenação ficar ciente'}
+              </span>
               <div style={{ marginTop: 4 }}>
                 <button className="botao botao-quieto" onClick={() => desmarcar(c.id)}>Desmarcar</button>
               </div>
@@ -337,18 +345,28 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
           <textarea name="descricao" required />
         </Campo>
 
-        {sessao.pode.marcar_para_outros && (
-          <Campo
-            rotulo="Para quem"
-            instrucao="O compromisso entra direto no calendário da pessoa escolhida, dizendo que foi você que marcou."
-          >
-            <select name="participante_id" defaultValue={sessao.usuario.id}>
-              {sessao.pessoas.map((p) => (
-                <option key={p.id} value={p.id}>{p.nome} — {p.papel_rotulo}</option>
-              ))}
-            </select>
-          </Campo>
-        )}
+        <Campo
+          rotulo="Quem participa"
+          instrucao="Marque todo mundo do compromisso — cada pessoa o recebe no próprio calendário, dizendo que foi você que marcou. Se ninguém da coordenação participar, ela é incluída automaticamente, para ficar ciente."
+        >
+          <div>
+            {sessao.pessoas.map((p) => (
+              <label
+                key={p.id}
+                style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '6px 0', fontWeight: 400 }}
+              >
+                <input
+                  type="checkbox"
+                  name="participantes"
+                  value={p.id}
+                  defaultChecked={p.id === sessao.usuario.id}
+                  style={{ width: 18, height: 18 }}
+                />
+                <span>{p.nome} <span className="meta">{p.papel_rotulo}</span></span>
+              </label>
+            ))}
+          </div>
+        </Campo>
 
         <div className="janela-acoes">
           <button type="button" className="botao botao-neutro" onClick={aoFechar}>Cancelar</button>

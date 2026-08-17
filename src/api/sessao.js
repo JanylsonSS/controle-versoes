@@ -36,11 +36,12 @@ export const rotasDeSessao = [
     usuario: pessoaParaTela(usuario),
     // O frontend usa isto para decidir o que mostrar; o servidor continua
     // conferindo em cada rota — botão escondido não é segurança.
+    // marcar_para_outros saiu daqui em 17/08: TODOS marcam para todos
+    // (o controle virou o aviso automático à coordenação).
     pode: {
       publicar: podePublicar(usuario),
       aprovar: ehAprovador(usuario),
       cadastrar_projeto: podeCadastrarProjeto(usuario),
-      marcar_para_outros: podeCadastrarProjeto(usuario),
     },
     pessoas: usuarios.todos().map(pessoaParaTela),
   })],

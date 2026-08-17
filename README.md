@@ -51,7 +51,7 @@ Para recomeçar do zero (**pare o servidor antes**, Ctrl+C):
 npm run recomecar
 ```
 
-Para conferir que o servidor está inteiro — 218 verificações automáticas
+Para conferir que o servidor está inteiro — 223 verificações automáticas
 (API + backup), sem tocar nos dados da demonstração:
 
 ```bash
@@ -103,9 +103,10 @@ protótipo não há senha):
 - as **notificações**: mudanças que você ainda não confirmou, compromissos que
   marcaram para você, atividades em que você foi marcado;
 - os **projetos ativos** em que você trabalha, com busca por nome ou código;
-- o **calendário da semana**: clicar num dia marca reunião ou visita técnica —
-  e coordenação e direção marcam para qualquer pessoa, caindo direto na
-  agenda dela.
+- o **calendário da semana**: clicar num dia marca reunião ou visita técnica,
+  para você e para quem mais participar — cada pessoa recebe no próprio
+  calendário. Se ninguém da coordenação estiver no compromisso, ela é
+  incluída automaticamente, para ficar ciente.
 
 **Na página do projeto**
 - as **informações atuais**: a última orientação publicada, com quem confirmou
@@ -145,7 +146,7 @@ protótipo não há senha):
 |---|---|---|
 | Servidor | Node.js puro (`node:http`), **zero dependências** | roda em qualquer máquina/hospedagem; não apodrece parado |
 | Banco | SQLite embutido (`node:sqlite`) | um arquivo; backup automático a cada 6 h (`dados/backups/`) |
-| API | JSON em `/api/*` (30 rotas) | contrato limpo para o frontend e para as verificações |
+| API | JSON em `/api/*` (32 rotas) | contrato limpo para o frontend e para as verificações |
 | Frontend | **React + Vite** (`frontend/`) | decisão de 13/08/2026, seguindo o modelo visual aprovado; é o padrão que o time de TI vai encontrar no mercado |
 | Visual | a paleta do **logotipo oficial** sobre a estrutura do modelo "Promav App" | preto #201E1F e dourado #A68E71, medidos da imagem do logo; Plus Jakarta Sans |
 
@@ -171,12 +172,12 @@ src/
     repositorio.js     todas as consultas            ┘ arquivos com SQL
     seed.js            dados de teste (o caso da pavimentação)
   regras/              as decisões de negócio, uma por arquivo
-  api/                 as 30 rotas JSON, por área
+  api/                 as 32 rotas JSON, por área
 ferramentas/           backup manual e o servidor do smoke test
 frontend/              o aplicativo React (Vite)
   src/telas/           Início, Projeto, Quadro, Aprovações
   smoke/               os 8 cenários de navegador (npm run test:ui)
-verificacao/           as 218 verificações (npm test)
+verificacao/           as 223 verificações (npm test)
 dados/                 criado ao rodar: banco.db e backups/
 dist/                  o build do frontend (gerado; fora do git)
 ```

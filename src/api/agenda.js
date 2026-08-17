@@ -1,13 +1,16 @@
 /* ══════════════════════════════════════════════════════════════════════
  * AGENDA: o calendário semanal da tela inicial.
  *
- * Cada um marca reunião ou visita técnica para si. A coordenação e a
- * direção marcam para qualquer pessoa — e o compromisso aparece direto
- * no calendário de quem foi marcado.
+ * Desde 17/08, TODOS marcam reunião ou visita técnica — para si e para
+ * os colegas (um compromisso, vários participantes). O compromisso cai
+ * direto no calendário de cada pessoa; quando ninguém da coordenação
+ * participa, ela é incluída automaticamente para ficar ciente.
+ * VER a agenda dos outros continua restrito (coordenação e direção).
  * ══════════════════════════════════════════════════════════════════════ */
 
 import { agenda, usuarios } from '../persistencia/repositorio.js';
 import { podeCadastrarProjeto } from '../regras/papeis.js';
+import { coordenacaoAIncluir } from '../regras/notificacao.js';
 import { ErroApi, exigir, texto, textoOpcional, dia } from './http.js';
 import { compromissoAcessivel } from './guardas.js';
 
@@ -64,25 +67,32 @@ export const rotasDeAgenda = [
     const hora = textoOpcional(corpo, 'hora');
     if (hora) exigir(/^([01]\d|2[0-3]):[0-5]\d$/.test(hora), 400, 'A hora precisa ser HH:MM.');
 
-    // Marcar para outra pessoa é privilégio da coordenação e da direção.
-    let participanteId = usuario.id;
-    if (corpo.participante_id != null && Number(corpo.participante_id) !== usuario.id) {
-      exigir(podeCadastrarProjeto(usuario), 403,
-        'Marcar compromisso para outra pessoa é da coordenação e da direção.');
-      exigir(usuarios.porId(Number(corpo.participante_id)), 400, 'Essa pessoa não existe.');
-      participanteId = Number(corpo.participante_id);
-    }
+    // Decisão de 17/08: TODOS marcam, para uma ou várias pessoas — o
+    // portão de permissão virou transparência (a coordenação é incluída
+    // automaticamente quando não participa; regras/notificacao.js).
+    const pedidos = Array.isArray(corpo.participante_ids)
+      ? corpo.participante_ids
+      : corpo.participante_id != null ? [corpo.participante_id] : [];
+    const participanteIds = [...new Set(pedidos.map(Number))];
+    if (!participanteIds.length) participanteIds.push(usuario.id);
+    exigir(
+      participanteIds.every((id) => Number.isInteger(id) && usuarios.porId(id)),
+      400, 'Tem gente na lista de participantes que não existe.',
+    );
 
-    const id = agenda.criar({
+    const automaticos = coordenacaoAIncluir(usuario, participanteIds, usuarios.todos());
+
+    const ids = agenda.marcar({
       tipo,
+      participanteIds,
+      automaticosIds: automaticos.map((u) => u.id),
+      criadaPor: usuario.id,
       dia: dia(corpo, 'dia', 'Informe o dia do compromisso (AAAA-MM-DD).'),
       hora,
       descricao: texto(corpo, 'descricao',
         'Descreva o compromisso: com quem é e de qual projeto.'),
-      participanteId,
-      criadaPor: usuario.id,
     });
-    return { id };
+    return { ids };
   }],
 
   ['DELETE', '/api/agenda/:id', ({ usuario, params }) => {

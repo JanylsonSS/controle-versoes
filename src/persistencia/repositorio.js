@@ -572,6 +572,38 @@ export const agenda = {
     return Number(r.lastInsertRowid);
   },
 
+  /**
+   * Um compromisso, vários participantes: uma linha por pessoa, tudo ou
+   * nada. As linhas automáticas (a coordenação avisada — ver
+   * regras/notificacao.js) entram com a marca própria.
+   */
+  marcar({ tipo, dia, hora, descricao, participanteIds, automaticosIds = [], criadaPor, quando }) {
+    const instante = quando ?? agora();
+    const inserir = banco.prepare(
+      `INSERT INTO agenda
+         (tipo, dia, hora, descricao, participante_id, criada_por, criada_em, incluido_automaticamente)
+       VALUES (?,?,?,?,?,?,?,?)`
+    );
+    const ids = [];
+    banco.exec('BEGIN');
+    try {
+      for (const [lista, automatica] of [[participanteIds, 0], [automaticosIds, 1]]) {
+        for (const pessoaId of lista) {
+          const r = inserir.run(
+            tipo, dia, hora || null, descricao,
+            Number(pessoaId), Number(criadaPor), instante, automatica,
+          );
+          ids.push(Number(r.lastInsertRowid));
+        }
+      }
+      banco.exec('COMMIT');
+    } catch (erro) {
+      banco.exec('ROLLBACK');
+      throw erro;
+    }
+    return ids;
+  },
+
   excluir: (id) => banco.prepare('DELETE FROM agenda WHERE id = ?').run(Number(id)),
 };
 

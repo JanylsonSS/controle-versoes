@@ -20,7 +20,7 @@ descrição e quem vai fazer. Consequências, todas implementadas:
 | Aval sem portão | Mudança de orçamento/prazo entra na fila do CEO/coordenação, mas o trabalho não espera; negar exige motivo registrado |
 | Upload removido | O sistema não guarda arquivo; a ficha aponta o Drive (link) e o `G:\` (caminho com copiar) |
 | **Retrabalho removido** | ver o alerta abaixo |
-| Agenda entra | Reunião e visita técnica no calendário da tela inicial; coordenação marca para os outros |
+| Agenda entra | Reunião e visita técnica no calendário da tela inicial (desde 17/08: todos marcam, para vários; a coordenação é incluída automaticamente quando não participa — Parte 4.3) |
 | React + Vite | Frontend novo com o visual do modelo "Promav App"; foco no desktop, celular adiado |
 
 ### ⚠️ A consequência que precisa voltar à mesa da direção
@@ -102,14 +102,17 @@ Três coisas esperam por essa decisão:
 2. **Sem cookie, o sistema abre como o Álvaro** (primeiro do seed). É o
    "entrar como" do protótipo; vira 401 quando o login entrar. Documentado no
    código.
-3. **Agenda: cada um vê só a própria; coordenação e direção veem a de todos**
-   (são quem marca para os outros). Desmarcar pode: o participante, quem
-   marcou, a coordenação ou a direção.
+3. **Agenda (regras de 17/08, a pedido da equipe):** todos marcam, para uma
+   ou várias pessoas — uma linha por participante. Se ninguém da coordenação
+   participar, ela é **incluída automaticamente** (alerta + calendário, com
+   a marca de automática). VER a agenda dos outros continua só de
+   coordenação/direção; desmarcar pode: o participante, quem marcou, a
+   coordenação ou a direção.
 4. **A lateral atualiza a cada troca de tela** (projetos e contador de
    aprovações). Sem atualização "ao vivo" — para 8 pessoas, recarregar na
    navegação basta.
 5. **O frontend tem só o smoke test** (8 cenários Playwright desde 17/08:
-   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 218
+   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 223
    verificações cobrem API + backup. Cobertura decente do frontend continua
    decisão do time de TI.
 6. **Sem numeração visível de orientação.** Nem "nº 7": o histórico ordena por
@@ -140,8 +143,9 @@ Três coisas esperam por essa decisão:
    (`src/regras/ciencia.js`) esperam calibração com a equipe — pergunta P3
    do roteiro de apresentação.
 8. **A agenda acabou de nascer.** Reunião e visita técnica bastam, ou falta
-   um terceiro tipo? Quem mais, além de coordenação e direção, precisa
-   marcar para os outros? (P9 e P10 do roteiro.)
+   um terceiro tipo? (P9 do roteiro. A P10 — quem marca para os outros —
+   foi respondida em 17/08: todos, com a coordenação incluída
+   automaticamente quando não participa.)
 9. **Só existem dois aprovadores** (direção e coordenação) e ninguém aprova
    a própria orientação — com os dois fora, ou um deles sendo o autor, o
    aval espera. Aceitável? (P14 do roteiro.)

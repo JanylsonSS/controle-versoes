@@ -1,6 +1,6 @@
-/* A agenda do calendário semanal: cada um marca para si; coordenação e
- * direção marcam para os outros e o compromisso cai direto na agenda
- * da pessoa. */
+/* A agenda do calendário semanal. Desde 17/08 todos marcam, para uma ou
+ * várias pessoas — e quando ninguém da coordenação participa, ela é
+ * incluída automaticamente, para ficar ciente. */
 
 import { COMO, ok, secao, encerrar, api } from './ajuda.mjs';
 
@@ -41,24 +41,51 @@ r = await api('POST', '/api/agenda', COMO.alvaro,
   { tipo: 'REUNIAO', dia: '2026-02-30', descricao: 'x' });
 ok('30 de fevereiro é recusado', r.status === 400);
 
-secao('3. Marcar para os outros é da coordenação');
+secao('3. Todos marcam, para várias pessoas — e a coordenação fica sabendo');
 r = await api('POST', '/api/agenda', COMO.alvaro, {
-  tipo: 'REUNIAO', dia: hoje(), descricao: 'x', participante_id: COMO.luiza,
-});
-ok('engenharia não marca para colega', r.status === 403);
-r = await api('POST', '/api/agenda', COMO.thayna, {
   tipo: 'REUNIAO', dia: hoje(), hora: '11:00',
   descricao: 'Alinhamento da rampa com a arquitetura. Projeto PAV-001.',
-  participante_id: COMO.luiza,
+  participante_ids: [COMO.alvaro, COMO.luiza],
 });
-ok('coordenação marca', r.status === 200);
-const marcadoId = r.dados.id;
+ok('engenharia marca para si E para a colega',
+   r.status === 200 && Array.isArray(r.dados.ids));
+ok('a coordenação ganhou a linha automática (2 participantes + 1 de ciência)',
+   r.dados.ids.length === 3, `ids: ${r.dados.ids?.join(', ')}`);
 r = await api('GET', '/api/agenda', COMO.luiza);
 ok('cai direto no calendário da Luiza',
-   r.dados.compromissos.some((c) => c.id === marcadoId));
+   r.dados.compromissos.some((c) => c.descricao.includes('Alinhamento da rampa')));
 r = await api('GET', '/api/notificacoes', COMO.luiza);
 ok('e nas notificações dela, dizendo quem marcou',
-   r.dados.marcados_para_voce.some((c) => c.id === marcadoId && c.criador_nome === 'Thayna Weydne'));
+   r.dados.marcados_para_voce.some(
+     (c) => c.descricao.includes('Alinhamento da rampa') && c.criador_nome === 'Álvaro Abrantes'));
+
+r = await api('GET', '/api/agenda', COMO.thayna);
+const automatica = r.dados.compromissos.find((c) => c.descricao.includes('Alinhamento da rampa'));
+ok('a coordenação vê o compromisso no PRÓPRIO calendário, marcado como automático',
+   Boolean(automatica) && automatica.incluido_automaticamente === 1);
+r = await api('GET', '/api/notificacoes', COMO.thayna);
+ok('e é alertada nas notificações, sabendo quem marcou',
+   r.dados.marcados_para_voce.some(
+     (c) => c.descricao.includes('Alinhamento da rampa') && c.criador_nome === 'Álvaro Abrantes'));
+
+r = await api('POST', '/api/agenda', COMO.alvaro, {
+  tipo: 'REUNIAO', dia: hoje(), hora: '14:00',
+  descricao: 'Reunião de orçamento com a própria coordenação. Projeto PAV-001.',
+  participante_ids: [COMO.alvaro, COMO.thayna],
+});
+ok('com a coordenação entre os participantes, nada de linha extra',
+   r.dados.ids.length === 2);
+r = await api('POST', '/api/agenda', COMO.thayna, {
+  tipo: 'REUNIAO', dia: hoje(), hora: '15:00',
+  descricao: 'Marcada pela coordenação para a Luiza. Projeto PAV-001.',
+  participante_ids: [COMO.luiza],
+});
+ok('a coordenação marcando também não duplica', r.dados.ids.length === 1);
+const marcadoId = r.dados.ids[0];
+r = await api('POST', '/api/agenda', COMO.alvaro, {
+  tipo: 'REUNIAO', dia: hoje(), descricao: 'x', participante_ids: [999],
+});
+ok('participante inexistente é recusado', r.status === 400);
 
 secao('4. Ver a agenda dos outros');
 r = await api('GET', `/api/agenda?pessoa=${COMO.luiza}`, COMO.alvaro);

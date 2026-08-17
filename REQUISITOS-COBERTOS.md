@@ -75,7 +75,7 @@ compromissos que a direção aprovou:
 | **R22** | Conjunto de obras correlatas | ✅ **completo desde 17/08** — o campo com sugestão de nomes já usados, e a **página do conjunto de volta**: o valor na ficha vira link, as obras aparecem em cartões (as que o R19 esconde viram só contagem) |
 | **R23** | Registro de andamento (o "commit") | ✅ — na página do projeto: o que fiz, dificuldade, dúvida em aberto destacada |
 | **R25** | Quadro de atividades (kanban) | ✅ — aba própria, arrastar por ponteiro, datas automáticas, **atividade nasce sozinha de cada orientação publicada** |
-| **R26** | Agenda semanal (reunião/visita técnica) | ✅ **novo no pivô** — calendário na tela inicial; clicar no dia marca com instrução em cada campo; coordenação e direção marcam para qualquer pessoa e o compromisso cai direto na agenda dela |
+| **R26** | Agenda semanal (reunião/visita técnica) | ✅ **novo no pivô; ampliado em 17/08** — calendário na tela inicial; clicar no dia marca, com instrução em cada campo. **Todos marcam, para uma ou várias pessoas** — cada participante recebe no próprio calendário; se ninguém da coordenação participar, ela é **incluída automaticamente** (alerta nas notificações + entrada no calendário dela). Ver a agenda dos outros continua restrito a coordenação/direção |
 
 ---
 

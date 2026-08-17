@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════════
- * R5 — QUEM É AVISADO QUANDO UMA VERSÃO É PUBLICADA
+ * R5 — QUEM É AVISADO QUANDO UMA ORIENTAÇÃO É PUBLICADA
  *
  * Regra atual: avisa a EQUIPE DO PROJETO, menos quem publicou.
  *
@@ -26,4 +26,24 @@
  */
 export function quemDeveSerAvisado(equipeDoProjeto, quemPublicou) {
   return equipeDoProjeto.filter((u) => u.id !== quemPublicou.id);
+}
+
+/**
+ * Agenda, decisão de 17/08/2026 (substitui o portão "só coordenação e
+ * direção marcam para os outros"): TODOS marcam reunião e visita, para
+ * quantas pessoas participarem. O controle virou transparência — quando
+ * nem o criador nem participante algum é da coordenação, ela é incluída
+ * automaticamente no compromisso: entra no calendário dela e nas
+ * notificações ("marcaram para você"), com a marca de automática.
+ *
+ * @param {{id:number, papel:string}} criador
+ * @param {number[]} participanteIds
+ * @param {{id:number, papel:string}[]} todasAsPessoas
+ * @returns {{id:number}[]} quem da coordenação ganha a linha automática
+ */
+export function coordenacaoAIncluir(criador, participanteIds, todasAsPessoas) {
+  const envolvidos = new Set([Number(criador.id), ...participanteIds.map(Number)]);
+  const coordenacao = todasAsPessoas.filter((u) => u.papel === 'COORDENACAO');
+  if (coordenacao.some((u) => envolvidos.has(u.id))) return [];
+  return coordenacao;
 }

@@ -151,12 +151,16 @@ em cada campo e — porque é a Thayna — o campo **"Para quem"**. Marcar uma
 visita técnica para o **Álvaro**. Trocar para o Álvaro: o compromisso está no
 calendário dele e nas notificações, "marcada por Thayna Weydne".
 
-> "Cada um marca para si; coordenação e direção marcam para qualquer
-> pessoa, e cai direto na agenda dela, dizendo quem marcou."
+> "Qualquer um marca — para si e para os colegas, quantos participarem: cai
+> direto na agenda de cada um, dizendo quem marcou. E ninguém marca nada
+> pelas costas da coordenação: se ela não estiver no compromisso, entra
+> automaticamente no calendário dela, só para ciência."
 
 **P9.** Reunião e visita técnica bastam, ou falta um terceiro tipo?
-**P10.** Quem mais, além de coordenação e direção, precisaria marcar para os
-outros?
+**P10.** ~~Quem mais precisaria marcar para os outros?~~ **Respondida em
+17/08: todos marcam, para quantos participarem — e a coordenação é incluída
+automaticamente quando não participa.** Confirme na apresentação se a regra
+agradou.
 
 ---
 
