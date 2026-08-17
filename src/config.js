@@ -23,6 +23,15 @@ export const FUSO = 'America/Sao_Paulo';
 export const PASTA_DADOS = path.resolve(RAIZ, process.env.PASTA_DADOS || 'dados');
 export const CAMINHO_BANCO = path.join(PASTA_DADOS, 'banco.db');
 
+/* Backup (ver src/persistencia/backup.js). Os snapshots ficam dentro de
+ * PASTA_DADOS e sobrevivem ao `npm run recomecar`, que só apaga o banco.
+ * O espelho é um segundo destino FORA do disco — ex.: a pasta do Google
+ * Drive para desktop — e fica vazio até alguém apontá-lo. */
+export const PASTA_BACKUPS = path.join(PASTA_DADOS, 'backups');
+export const PASTA_BACKUP_ESPELHO = process.env.PASTA_BACKUP_ESPELHO || '';
+export const HORAS_ENTRE_BACKUPS = 6;
+export const BACKUPS_MANTIDOS = 40;
+
 /* O frontend em React é compilado para `dist/` (npm run app:build — o
  * iniciar.bat roda isso sozinho quando falta). Enquanto o build não
  * existir nesta máquina, o servidor mostra a página provisória de

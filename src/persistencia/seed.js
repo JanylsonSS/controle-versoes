@@ -250,7 +250,14 @@ async function popular() {
 
 /* ─── Recomeçar do zero ─────────────────────────────────────────────── */
 
-function apagarTudo() {
+async function apagarTudo() {
+  // Despedida: se havia dados, um último snapshot fica em dados/backups
+  // antes do recomeço apagar tudo — protege do "recomecar" distraído
+  // num banco que já tinha uso real.
+  if (fs.existsSync(CAMINHO_BANCO)) {
+    const { backupSeguro } = await import('./backup.js');
+    backupSeguro('despedida do recomeçar');
+  }
   try {
     for (const sufixo of ['', '-wal', '-shm']) {
       fs.rmSync(`${CAMINHO_BANCO}${sufixo}`, { force: true });
@@ -271,7 +278,7 @@ const executadoDireto =
   process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 if (executadoDireto) {
-  if (process.argv.includes('--recriar')) apagarTudo();
+  if (process.argv.includes('--recriar')) await apagarTudo();
   const criou = await popularSeVazio();
   console.log(
     criou ? 'Dados de teste criados.' : 'O banco já tem dados. Use "npm run recomecar" para começar do zero.'

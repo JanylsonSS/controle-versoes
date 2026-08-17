@@ -10,7 +10,9 @@
   "scripts": {
     "start": "node servidor.js",
     "recomecar": "node src/persistencia/seed.js --recriar",
+    "backup": "node ferramentas/backup.mjs",
     "test": "node verificacao/executar.mjs",
+    "test:ui": "npm --prefix frontend run smoke",
     "verificar": "node verificacao/executar.mjs",
     "app": "npm --prefix frontend run dev",
     "app:build": "npm --prefix frontend run build",

@@ -49,14 +49,21 @@ if (!fs.existsSync(path.join(RAIZ, 'src', 'config.js'))) {
 
 /* ─── 3. Agora sim ──────────────────────────────────────────────────── */
 
-const { PORTA, NOME_EXIBICAO, PASTA_DIST, PASTA_PUBLICA } = await import('./src/config.js');
+const { PORTA, NOME_EXIBICAO, PASTA_DIST, PASTA_PUBLICA, HORAS_ENTRE_BACKUPS } =
+  await import('./src/config.js');
 const { popularSeVazio } = await import('./src/persistencia/seed.js');
+const { backupSeguro } = await import('./src/persistencia/backup.js');
 const { atenderApi } = await import('./src/api/http.js');
 const { rotas } = await import('./src/api/indice.js');
 
 if (await popularSeVazio()) {
   console.log('Primeira execução: dados de teste criados.');
 }
+
+// O backup roda ao subir e de tempos em tempos, e nunca derruba o
+// servidor (backupSeguro engole o erro e o registra no console).
+backupSeguro('ao subir');
+setInterval(() => backupSeguro('periódico'), HORAS_ENTRE_BACKUPS * 3600 * 1000).unref();
 
 const TIPOS_ESTATICOS = {
   '.html': 'text/html; charset=utf-8',
