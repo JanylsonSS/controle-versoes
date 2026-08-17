@@ -61,8 +61,20 @@ function Lateral() {
     }
   }, [local, sessao]);
 
-  async function entrarComo(usuarioId) {
-    await api.criar('/api/sessao', { usuario_id: Number(usuarioId) });
+  async function entrarComo(evento) {
+    const escolhido = sessao.pessoas.find((p) => p.id === Number(evento.target.value));
+    // Virar quem aprova pede um "tem certeza": a troca é livre enquanto
+    // não há login, mas fica registrada no servidor — e aprovar no nome
+    // errado suja exatamente o registro que o sistema existe para manter.
+    if (escolhido?.aprova && !window.confirm(
+      `Você vai passar a agir como ${escolhido.nome} (${escolhido.papel_rotulo}), `
+      + 'que aprova mudanças de orçamento e prazo.\n\n'
+      + 'A troca fica registrada. Continuar?'
+    )) {
+      evento.target.value = String(sessao.usuario.id); // o select volta
+      return;
+    }
+    await api.criar('/api/sessao', { usuario_id: escolhido.id });
     carregarSessao();
   }
 
@@ -99,17 +111,20 @@ function Lateral() {
         </NavLink>
       ))}
 
-      <div className="lateral-rodape">
+      <div className={`lateral-rodape${sessao.pode.aprovar ? ' rodape-aprovador' : ''}`}>
         <p className="ajuda">Você está como</p>
         {/* O "entrar como" do protótipo. Morre quando o login com a conta
             Google entrar (ver PENDENCIAS.md). */}
-        <select value={sessao.usuario.id} onChange={(e) => entrarComo(e.target.value)}>
+        <select value={sessao.usuario.id} onChange={entrarComo}>
           {sessao.pessoas.map((p) => (
             <option key={p.id} value={p.id}>
               {p.nome} — {p.papel_rotulo}
             </option>
           ))}
         </select>
+        {sessao.pode.aprovar && (
+          <p className="rodape-alerta">Papel que aprova — as ações valem em nome de {sessao.usuario.nome}.</p>
+        )}
       </div>
     </aside>
   );

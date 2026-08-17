@@ -152,6 +152,18 @@ banco.exec(`
     resolvido_por INTEGER REFERENCES usuarios(id)
   );
 
+  -- Enquanto o login (R16) espera a hospedagem, qualquer um troca o
+  -- "entrar como". Esta tabela não impede a troca — registra: quem era,
+  -- quem virou, de que endereço e quando. É o rastro que responde
+  -- "quem estava como a direção na terça?" durante o piloto.
+  CREATE TABLE IF NOT EXISTS trocas_de_sessao (
+    id               INTEGER PRIMARY KEY,
+    de_usuario_id    INTEGER REFERENCES usuarios(id),
+    para_usuario_id  INTEGER NOT NULL REFERENCES usuarios(id),
+    ip               TEXT,
+    quando           TEXT NOT NULL
+  );
+
   CREATE INDEX IF NOT EXISTS idx_orientacoes_projeto ON orientacoes(projeto_id, publicada_em);
   CREATE INDEX IF NOT EXISTS idx_avisos_usuario      ON avisos(usuario_id);
   CREATE INDEX IF NOT EXISTS idx_equipes_usuario     ON equipes(usuario_id);

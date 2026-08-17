@@ -131,6 +131,12 @@ a:hover { text-decoration: underline; }
 }
 .lateral-rodape .ajuda { color: rgba(255, 255, 255, .45); margin: 0 0 var(--sp-1); font-size: 12px; }
 
+/* Sessão em papel que aprova (coordenação/direção): o rodapé grita em
+ * dourado — sem login, é o aviso de "você está agindo como quem manda". */
+.rodape-aprovador select { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.rodape-aprovador .ajuda { color: var(--brand); }
+.rodape-alerta { color: var(--brand); font-size: 12px; margin: var(--sp-2) 0 0; line-height: 1.35; }
+
 .conteudo { padding: var(--sp-8); max-width: 1120px; width: 100%; margin: 0 auto; min-width: 0; }
 
 /* ─── Peças genéricas ──────────────────────────────────────────────── */

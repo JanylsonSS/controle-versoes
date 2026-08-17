@@ -1,7 +1,7 @@
 /* Confere o domínio novo direto no repositório, sem passar por HTTP —
    a camada web ainda não existe nesta fase da migração. */
 // sem-servidor — fala direto com o repositório, não precisa de HTTP
-const { usuarios, projetos, orientacoes, avisos, atividades, agenda, equipes } =
+const { usuarios, projetos, orientacoes, avisos, atividades, agenda, equipes, trocas } =
   await import('../src/persistencia/repositorio.js');
 
 let falhas = 0;
@@ -89,6 +89,16 @@ console.log('\n9. Tela inicial: o que preciso saber hoje');
 ok('avisos pendentes do Álvaro', avisos.doUsuario(1, { apenasPendentes: true }).length > 0);
 ok('atividades em que o Álvaro está marcado', atividades.doResponsavel(1).length > 0);
 ok('projetos ativos que ele vê', projetos.doUsuario(1).length === 2);
+
+console.log('\n10. O rastro do "entrar como"');
+trocas.registrar({ deUsuarioId: 1, paraUsuarioId: 8, ip: '192.168.0.10' });
+trocas.registrar({ deUsuarioId: null, paraUsuarioId: 7 });
+const rastro = trocas.ultimas(2);
+ok('as trocas ficam registradas, mais nova primeiro',
+   rastro.length === 2 && rastro[0].para_usuario_id === 7 && rastro[1].para_usuario_id === 8);
+ok('com os nomes de quem era e quem virou',
+   rastro[1].de_nome === 'Álvaro Abrantes' && rastro[1].para_nome === 'Matheus Grangeiro');
+ok('sem "de" (primeira visita, sem cookie) também registra', rastro[0].de_nome === null);
 
 console.log(falhas ? `\n${falhas} FALHA(S)\n` : '\nDomínio novo funcionando.\n');
 process.exit(falhas ? 1 : 0);

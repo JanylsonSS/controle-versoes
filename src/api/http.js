@@ -60,10 +60,18 @@ export function usuarioDaSessao(req) {
 }
 
 export function definirSessao(res, usuarioId) {
+  // Cookie de SESSÃO, sem Max-Age: fechar o navegador desfaz o "entrar
+  // como". Durava 30 dias; encurtado em 17/08/2026 — o acidente típico
+  // do piloto é agir dias depois como outra pessoa sem lembrar da troca.
   res.setHeader(
     'set-cookie',
-    `usuario_id=${Number(usuarioId)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`
+    `usuario_id=${Number(usuarioId)}; Path=/; HttpOnly; SameSite=Lax`
   );
+}
+
+/** O endereço de quem chamou, para o rastro das trocas de sessão. */
+export function enderecoDe(req) {
+  return req.socket?.remoteAddress ?? null;
 }
 
 /* ─── Corpo e rotas ─────────────────────────────────────────────────── */

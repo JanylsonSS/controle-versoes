@@ -601,3 +601,27 @@ export const flags = {
       .prepare('UPDATE flags_cadastro SET resolvido_em = ?, resolvido_por = ? WHERE id = ?')
       .run(quando ?? agora(), Number(usuarioId), Number(flagId)),
 };
+
+/* ─── Trocas de sessão ──────────────────────────────────────────────────
+ * O rastro do "entrar como" enquanto não há login (ver banco.js).
+ * Nunca se apaga: é registro de auditoria, como os avisos. */
+
+export const trocas = {
+  registrar: ({ deUsuarioId, paraUsuarioId, ip, quando }) =>
+    banco
+      .prepare(
+        'INSERT INTO trocas_de_sessao (de_usuario_id, para_usuario_id, ip, quando) VALUES (?,?,?,?)'
+      )
+      .run(deUsuarioId ?? null, Number(paraUsuarioId), ip ?? null, quando ?? agora()),
+
+  ultimas: (limite = 100) =>
+    banco
+      .prepare(
+        `SELECT t.*, de.nome AS de_nome, para.nome AS para_nome
+           FROM trocas_de_sessao t
+           LEFT JOIN usuarios de   ON de.id   = t.de_usuario_id
+                JOIN usuarios para ON para.id = t.para_usuario_id
+          ORDER BY t.id DESC LIMIT ?`
+      )
+      .all(Number(limite)),
+};

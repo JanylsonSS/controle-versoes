@@ -9,17 +9,25 @@
  * ══════════════════════════════════════════════════════════════════════ */
 
 import { NOME_EXIBICAO, CHAMADA } from '../config.js';
-import { usuarios, avisos, agenda, atividades } from '../persistencia/repositorio.js';
+import { usuarios, avisos, agenda, atividades, trocas } from '../persistencia/repositorio.js';
 import { rotuloDoPapel, podePublicar, podeCadastrarProjeto } from '../regras/papeis.js';
 import { ehAprovador } from '../regras/aprovacao.js';
 import { estaAtrasado } from '../regras/ciencia.js';
 import { veTodosOsProjetos } from '../regras/visibilidade.js';
-import { ErroApi, definirSessao } from './http.js';
+import { ErroApi, definirSessao, enderecoDe } from './http.js';
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 
 function pessoaParaTela(u) {
-  return { id: u.id, nome: u.nome, papel: u.papel, papel_rotulo: rotuloDoPapel(u.papel) };
+  return {
+    id: u.id,
+    nome: u.nome,
+    papel: u.papel,
+    papel_rotulo: rotuloDoPapel(u.papel),
+    // O seletor "entrar como" pede confirmação ao virar quem aprova —
+    // a decisão vem pronta daqui, para a tela não reimplementar regra.
+    aprova: ehAprovador(u),
+  };
 }
 
 export const rotasDeSessao = [
@@ -38,9 +46,16 @@ export const rotasDeSessao = [
   })],
 
   // Troca o "entrando como". Sai junto com o login de verdade.
-  ['POST', '/api/sessao', ({ res, corpo }) => {
+  // A troca é livre, mas nunca é muda: fica registrada com quem era,
+  // quem virou e o endereço de onde veio (tabela trocas_de_sessao).
+  ['POST', '/api/sessao', ({ req, res, usuario, corpo }) => {
     const escolhido = usuarios.porId(Number(corpo.usuario_id));
     if (!escolhido) throw new ErroApi(400, 'Essa pessoa não existe.');
+    trocas.registrar({
+      deUsuarioId: usuario.id,
+      paraUsuarioId: escolhido.id,
+      ip: enderecoDe(req),
+    });
     definirSessao(res, escolhido.id);
     return { usuario: pessoaParaTela(escolhido) };
   }],

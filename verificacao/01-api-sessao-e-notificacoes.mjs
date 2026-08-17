@@ -11,6 +11,8 @@ ok('sou o Álvaro', r.dados.usuario.nome === 'Álvaro Abrantes');
 ok('engenharia publica mas não aprova nem cadastra',
    r.dados.pode.publicar && !r.dados.pode.aprovar && !r.dados.pode.cadastrar_projeto);
 ok('as 8 pessoas vêm para os seletores', r.dados.pessoas.length === 8);
+ok('cada pessoa diz se aprova (o seletor confirma antes de virar quem manda)',
+   r.dados.pessoas.filter((p) => p.aprova).length === 2);
 
 r = await api('GET', '/api/sessao', COMO.thayna);
 ok('coordenação pode tudo', Object.values(r.dados.pode).every(Boolean));
@@ -26,8 +28,25 @@ const resposta = await fetch(`${BASE}/api/sessao`, {
 ok('troca aceita', resposta.status === 200);
 const cookie = resposta.headers.get('set-cookie') ?? '';
 ok('o cookie é HttpOnly + SameSite=Lax', cookie.includes('HttpOnly') && cookie.includes('SameSite=Lax'));
+ok('o cookie é de sessão (fechar o navegador desfaz o "entrar como")',
+   !cookie.includes('Max-Age') && !cookie.includes('Expires'));
 r = await api('POST', '/api/sessao', COMO.alvaro, { usuario_id: 999 });
 ok('pessoa inexistente é recusada', r.status === 400);
+
+// O rastro da troca, lido direto no banco (conexão só-leitura; o WAL
+// permite ler com o servidor no ar — é o mesmo truque do backup).
+{
+  const { DatabaseSync } = await import('node:sqlite');
+  const { CAMINHO_BANCO } = await import('../src/config.js');
+  let leitura;
+  try { leitura = new DatabaseSync(CAMINHO_BANCO, { readOnly: true }); }
+  catch { leitura = new DatabaseSync(CAMINHO_BANCO); }
+  const troca = leitura.prepare('SELECT * FROM trocas_de_sessao ORDER BY id DESC LIMIT 1').get();
+  leitura.close();
+  ok('a troca ficou registrada (quem era → quem virou)',
+     Boolean(troca) && troca.de_usuario_id === COMO.alvaro && troca.para_usuario_id === COMO.lya);
+  ok('com o endereço de onde veio', typeof troca?.ip === 'string' && troca.ip.length > 0);
+}
 
 secao('3. A API recusa o que não é JSON');
 const semJson = await fetch(`${BASE}/api/sessao`, {
