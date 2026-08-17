@@ -132,6 +132,14 @@ test('a agenda: clicar no dia, marcar, e o compromisso aparecer na semana', asyn
   await janela.locator('input[name="hora"]').fill('08:30');
   await janela.locator('textarea[name="descricao"]')
     .fill('Smoke: vistoria do meio-fio no trecho leste. Projeto PAV-001.');
+
+  // as barras encadeadas: eu já estou na lista + a barra vazia; escolher
+  // alguém na vazia faz outra barra igual aparecer embaixo
+  const barras = janela.locator('select:not([name="tipo"])');
+  await expect(barras).toHaveCount(2);
+  await barras.last().selectOption({ label: 'Luiza Elisa — Engenharia' });
+  await expect(barras).toHaveCount(3);
+
   await janela.getByRole('button', { name: 'Marcar', exact: true }).click();
 
   // A grade da semana, não a célula .hoje: se a rodada cruzar a

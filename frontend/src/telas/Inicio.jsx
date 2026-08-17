@@ -266,6 +266,15 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
   const [erro, setErro] = useState(null);
   const [salvando, setSalvando] = useState(false);
 
+  // Os participantes em barras encadeadas: cada escolha faz aparecer
+  // outra barra igual; a barra vazia encerra a corrente. Quem abre a
+  // janela já começa na lista.
+  const [participantes, setParticipantes] = useState([sessao.usuario.id]);
+  useEffect(() => {
+    setParticipantes([sessao.usuario.id]);
+    setErro(null);
+  }, [dia, sessao.usuario.id]);
+
   if (!dia) return null;
 
   async function marcar(evento) {
@@ -279,7 +288,7 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
         dia,
         hora: form.get('hora') || null,
         descricao: form.get('descricao'),
-        participante_ids: form.getAll('participantes').map(Number),
+        participante_ids: participantes,
       };
       await api.criar('/api/agenda', corpo);
       aoMudar();
@@ -347,25 +356,13 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
 
         <Campo
           rotulo="Quem participa"
-          instrucao="Marque todo mundo do compromisso — cada pessoa o recebe no próprio calendário, dizendo que foi você que marcou. Se ninguém da coordenação participar, ela é incluída automaticamente, para ficar ciente."
+          instrucao="Cada pessoa recebe o compromisso no próprio calendário. Escolheu alguém, aparece outra barra para o próximo; a barra vazia encerra. Se ninguém da coordenação participar, ela é incluída automaticamente, para ficar ciente."
         >
-          <div>
-            {sessao.pessoas.map((p) => (
-              <label
-                key={p.id}
-                style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '6px 0', fontWeight: 400 }}
-              >
-                <input
-                  type="checkbox"
-                  name="participantes"
-                  value={p.id}
-                  defaultChecked={p.id === sessao.usuario.id}
-                  style={{ width: 18, height: 18 }}
-                />
-                <span>{p.nome} <span className="meta">{p.papel_rotulo}</span></span>
-              </label>
-            ))}
-          </div>
+          <BarrasDeParticipantes
+            pessoas={sessao.pessoas}
+            participantes={participantes}
+            aoMudar={setParticipantes}
+          />
         </Campo>
 
         <div className="janela-acoes">
@@ -376,5 +373,50 @@ function JanelaMarcar({ dia, compromissos, aoFechar, aoMudar }) {
         </div>
       </form>
     </Janela>
+  );
+}
+
+/**
+ * As barras encadeadas de participantes: uma barra por pessoa escolhida
+ * e uma vazia no fim para chamar a próxima — escolher nela faz outra
+ * barra igual aparecer; a vazia encerra a corrente. Trocar uma barra
+ * para "tirar da lista" remove a pessoa; quem já está numa barra não
+ * aparece nas outras.
+ */
+function BarrasDeParticipantes({ pessoas, participantes, aoMudar }) {
+  const disponiveis = pessoas.filter((p) => !participantes.includes(p.id));
+
+  function trocar(indice, valor) {
+    const novos = [...participantes];
+    if (valor === '') novos.splice(indice, 1);
+    else novos[indice] = Number(valor);
+    aoMudar(novos);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 8 }}>
+      {participantes.map((id, indice) => (
+        <select key={id} value={id} onChange={(e) => trocar(indice, e.target.value)}>
+          <option value="">— tirar da lista</option>
+          {pessoas
+            .filter((p) => p.id === id || !participantes.includes(p.id))
+            .map((p) => (
+              <option key={p.id} value={p.id}>{p.nome} — {p.papel_rotulo}</option>
+            ))}
+        </select>
+      ))}
+      {disponiveis.length > 0 && (
+        <select
+          key={`proxima-${participantes.join('-')}`}
+          value=""
+          onChange={(e) => e.target.value && aoMudar([...participantes, Number(e.target.value)])}
+        >
+          <option value="">Adicionar participante…</option>
+          {disponiveis.map((p) => (
+            <option key={p.id} value={p.id}>{p.nome} — {p.papel_rotulo}</option>
+          ))}
+        </select>
+      )}
+    </div>
   );
 }
