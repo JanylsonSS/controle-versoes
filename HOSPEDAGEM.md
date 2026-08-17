@@ -4,10 +4,11 @@
 > apresentação do protótipo.
 >
 > **Nota da migração (14/08/2026):** o sistema agora tem um frontend em React
-> que precisa ser compilado no deploy (`npm run app:build` antes do
-> `node servidor.js`). Isso **não muda a recomendação** — os serviços de
-> publicação automática (opção 1) fazem esse build sozinhos a partir do
-> `package.json`; na VPS (opção 2) é uma linha a mais no script de deploy.
+> que precisa ser compilado no deploy — `npm run build` faz tudo (instala as
+> dependências do frontend e compila; depois é só `node servidor.js`). Isso
+> **não muda a recomendação** — os serviços de publicação automática (opção 1)
+> detectam e rodam o `npm run build` padrão; na VPS (opção 2) são duas linhas
+> a mais no script de deploy.
 
 ---
 
@@ -16,20 +17,21 @@
 Hoje o sistema roda num computador só, ligado à mão. Para virar ferramenta de
 trabalho, ele precisa de um lugar onde fique **ligado o tempo todo e acessível
 pela internet** — e que, quando o celular voltar ao escopo, alcance também o
-canteiro. São quatro caminhos, de R$ 0 a cerca de R$ 700 por ano.
+canteiro. São quatro caminhos, de R$ 0 a cerca de R$ 720 por ano — só a
+nuvem grande, a quarta, não tem teto previsível.
 
 ## O que o sistema precisa desse lugar
 
 Sem termo técnico, é isto:
 
 1. **Ficar ligado sempre.** Se sair do ar num sábado, a equipe não confere a
-   orientação em vigor e volta ao WhatsApp — que é justamente o que estamos
-   tentando eliminar.
+   orientação mais recente e volta ao WhatsApp — que é justamente o que
+   estamos tentando eliminar.
 2. **Ser aberto pela internet**, com endereço seguro (o cadeado do navegador),
    para funcionar fora do escritório.
-3. **Não perder os dados.** O sistema guarda um arquivo com todas as
-   orientações, quem confirmou ciência e o andamento de cada obra. Esse
-   arquivo não pode sumir num reinício.
+3. **Não perder os dados.** O sistema guarda um banco de dados com todas
+   as orientações, quem confirmou ciência e o andamento de cada obra. Esse
+   banco não pode sumir num reinício.
 4. **Ser atualizável pelos estagiários** sem virar um projeto a cada ajuste.
 
 ---
@@ -78,8 +80,8 @@ uma versão nova, o serviço percebe e publica sozinho, em poucos minutos.
 
 | Vantagens | Desvantagens |
 |---|---|
-| Custo de hospedagem zero | **Depende do computador ficar ligado.** Alguém desligou na sexta, a obra fica sem consulta no sábado |
-| Os dados nunca saem da empresa | Depende da internet do escritório — se cair, o canteiro fica sem acesso |
+| Custo de hospedagem zero | **Depende do computador ficar ligado.** Alguém desligou na sexta, a equipe fica sem consulta no sábado |
+| Os dados nunca saem da empresa | Depende da internet do escritório — se ela cair, o acesso de fora cai junto |
 | Não depende de fornecedor nenhum | Se o disco desse computador queimar, os dados vão junto (a menos que o backup esteja mesmo funcionando) |
 | Serve bem para testar antes de decidir | Ruim para uma ferramenta que se propõe a ser a fonte única da verdade |
 
@@ -96,7 +98,7 @@ uma versão nova, o serviço percebe e publica sozinho, em poucos minutos.
 
 | Vantagens | Desvantagens |
 |---|---|
-| Combina com o Google Workspace que a empresa já usa | **Desproporcional para 10 pessoas e 4 obras** |
+| Combina com o Google que a empresa já usa (Drive, Gmail) | **Desproporcional para 8 usuários e 4 obras** |
 | Escala sem limite se a empresa crescer muito | Cobrança por uso, difícil de prever — a conta pode surpreender |
 | Serviços prontos para tudo | Exigiria trocar o banco atual por um banco pago, subindo custo e complexidade |
 | | A configuração é a mais técnica das quatro |
@@ -141,7 +143,7 @@ Três motivos:
    construir sob medida com dois estagiários mantendo. A opção 1 é a que menos
    pede deles: não há servidor para administrar, e publicar uma correção é
    salvar o código.
-2. **A diferença de preço para a opção 2 é pequena** — algo como R$ 10 a 20 por
+2. **A diferença de preço para a opção 2 é pequena** — algo como R$ 5 a 10 por
    mês — e o que se compra com ela é justamente o trabalho recorrente que a
    empresa não tem quem faça.
 3. **A opção 3 contradiz o objetivo.** Um sistema que existe para ser a fonte
@@ -172,7 +174,8 @@ do [PENDENCIAS.md](PENDENCIAS.md):
 
 ## Se a empresa crescer
 
-A recomendação vale para o tamanho de hoje: 10 pessoas, 4 obras. Se em dois ou
+A recomendação vale para o tamanho de hoje: 10 pessoas na empresa, 8 delas
+com conta no sistema, 4 obras. Se em dois ou
 três anos forem dezenas de obras simultâneas e uma equipe de TI própria, vale
 reabrir a discussão — tanto para migrar para servidor próprio quanto para
 reconsiderar uma plataforma pronta de mercado, como está discutido em

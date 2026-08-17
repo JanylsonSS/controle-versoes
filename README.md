@@ -86,7 +86,8 @@ protótipo não há senha):
   marcaram para você, atividades em que você foi marcado;
 - os **projetos ativos** em que você trabalha, com busca por nome ou código;
 - o **calendário da semana**: clicar num dia marca reunião ou visita técnica —
-  e a coordenação marca para qualquer pessoa, caindo direto na agenda dela.
+  e coordenação e direção marcam para qualquer pessoa, caindo direto na
+  agenda dela.
 
 **Na página do projeto**
 - as **informações atuais**: a última orientação publicada, com quem confirmou

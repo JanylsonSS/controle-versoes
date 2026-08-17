@@ -84,8 +84,9 @@ Três coisas esperam por essa decisão:
 2. **Sem cookie, o sistema abre como o Álvaro** (primeiro do seed). É o
    "entrar como" do protótipo; vira 401 quando o login entrar. Documentado no
    código.
-3. **Agenda: cada um vê só a própria; a coordenação vê a de todos** (é ela que
-   marca). Desmarcar pode: o participante, quem marcou, ou a coordenação.
+3. **Agenda: cada um vê só a própria; coordenação e direção veem a de todos**
+   (são quem marca para os outros). Desmarcar pode: o participante, quem
+   marcou, a coordenação ou a direção.
 4. **A lateral atualiza a cada troca de tela** (projetos e contador de
    aprovações). Sem atualização "ao vivo" — para 8 pessoas, recarregar na
    navegação basta.

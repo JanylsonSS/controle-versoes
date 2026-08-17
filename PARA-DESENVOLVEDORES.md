@@ -191,7 +191,7 @@ notificações.
 
 Duas regras finas:
 
-- **Ninguém aprova a própria orientação** (`podeAprovarEsta`). Como a
+- **Ninguém aprova a própria orientação** (`porQueNaoPodeAprovar`). Como a
   coordenação publica E aprova, sem isso o aval viraria formalidade.
 - **Apagar atividade:** quem criou, ou coordenação/direção
   (`podeExcluirAtividade`). A decisão vai pronta no JSON (`pode_excluir`).

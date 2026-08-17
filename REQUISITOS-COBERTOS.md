@@ -57,11 +57,12 @@ compromissos que a direção aprovou:
 | **R14** | Confiável e sempre disponível | ❌ depende da hospedagem (pendência antiga) |
 | **R15** | Registro de informação externa | ❌ não construído; a descrição da orientação cumpre parte do papel ("o cliente pediu em reunião…") |
 
-## Os pedidos da coordenação (R16–R23) e o que o pivô acrescentou (R25–R26)
+## Os pedidos da coordenação (R16–R23, R25) e o que o pivô acrescentou (R26)
 
-> Não existe R24: a numeração saltou de R23 para R25 quando a placa de aviso
-> — numerada de início como "R21b" — foi incorporada ao R21 e os acréscimos
-> entraram como R25/R26. É um buraco de numeração, não um pedido descartado.
+> Não existe R24: desde o levantamento a numeração saltou de R23 para R25 —
+> a placa de aviso entrou como "R21b" em vez de ganhar número próprio, e
+> depois foi incorporada ao R21. É um buraco de numeração, não um pedido
+> descartado.
 
 | R | Pedido | Situação |
 |---|---|---|
@@ -74,7 +75,7 @@ compromissos que a direção aprovou:
 | **R22** | Conjunto de obras correlatas | 🟡 o campo existe e o formulário sugere nomes já usados; a **página** do conjunto saiu na migração e não voltou |
 | **R23** | Registro de andamento (o "commit") | ✅ — na página do projeto: o que fiz, dificuldade, dúvida em aberto destacada |
 | **R25** | Quadro de atividades (kanban) | ✅ — aba própria, arrastar por ponteiro, datas automáticas, **atividade nasce sozinha de cada orientação publicada** |
-| **R26** | Agenda semanal (reunião/visita técnica) | ✅ **novo no pivô** — calendário na tela inicial; clicar no dia marca com instrução em cada campo; coordenação marca para qualquer pessoa e cai direto na agenda dela |
+| **R26** | Agenda semanal (reunião/visita técnica) | ✅ **novo no pivô** — calendário na tela inicial; clicar no dia marca com instrução em cada campo; coordenação e direção marcam para qualquer pessoa e o compromisso cai direto na agenda dela |
 
 ---
 

@@ -7,9 +7,7 @@
  * ══════════════════════════════════════════════════════════════════════ */
 
 /**
- * Situação da obra. Não confundir com a situação da REVISÃO
- * (vigente / antiga / cancelada) — são coisas diferentes, e as telas
- * usam palavras diferentes de propósito para ninguém trocar uma pela outra.
+ * Situação da obra — em que pé o contrato está, nas palavras da empresa.
  *
  * `ativa` decide se o projeto aparece na listagem normal: obra concluída
  * ou parada só aparece quando alguém pede para ver.

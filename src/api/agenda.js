@@ -40,7 +40,8 @@ export const rotasDeAgenda = [
     let pessoaId = usuario.id;
     const pedida = url.searchParams.get('pessoa');
     if (pedida && Number(pedida) !== usuario.id) {
-      exigir(podeCadastrarProjeto(usuario), 403, 'Ver a agenda dos outros é da coordenação.');
+      exigir(podeCadastrarProjeto(usuario), 403,
+        'Ver a agenda dos outros é da coordenação e da direção.');
       exigir(usuarios.porId(Number(pedida)), 404, 'Essa pessoa não existe.');
       pessoaId = Number(pedida);
     }

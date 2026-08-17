@@ -3,6 +3,8 @@
  *
  * Regra do documento: quem projeta publica; quem executa, orça e contrata
  * consulta e recebe. Publicar uma orientação é ação restrita.
+ *
+ * O `resumo` de cada papel é documentação viva — nenhuma tela o exibe hoje.
  * ══════════════════════════════════════════════════════════════════════ */
 
 export const PAPEIS = {
@@ -14,7 +16,7 @@ export const PAPEIS = {
   },
   ARQUITETURA: {
     rotulo: 'Arquitetura',
-    resumo: 'Projeta e revisa',
+    resumo: 'Projeta e detalha',
     publica: true,
     aprova: false,
   },
@@ -72,9 +74,11 @@ export function podePublicar(usuario) {
  * aval do CEO ou da Coordenadora de contratos.
  *
  * Desde 13/08/2026 o aval é registro, não portão: a orientação já vale e a
- * atividade já corre. A fila e as rotas estão em `src/api/orientacoes.js`;
- * o que conta como "grande" e a trava "ninguém aprova a própria" estão em
- * `aprovacao.js`.
+ * atividade já corre. "Grande" é a resposta de quem publica à pergunta
+ * única "muda orçamento ou prazo?" — a flag `muda_orcamento_ou_prazo`
+ * gravada na publicação. A fila e as rotas (`src/api/orientacoes.js`)
+ * aplicam esta regra via `ehAprovador` de `aprovacao.js`, onde também
+ * mora a trava "ninguém aprova a própria".
  */
 export function podeAprovar(usuario) {
   return Boolean(usuario && PAPEIS[usuario.papel]?.aprova);

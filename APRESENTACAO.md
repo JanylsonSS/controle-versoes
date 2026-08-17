@@ -151,8 +151,8 @@ em cada campo e — porque é a Thayna — o campo **"Para quem"**. Marcar uma
 visita técnica para o **Álvaro**. Trocar para o Álvaro: o compromisso está no
 calendário dele e nas notificações, "marcada por Thayna Weydne".
 
-> "Cada um marca para si; a coordenação marca para qualquer pessoa, e cai
-> direto na agenda dela, dizendo quem marcou."
+> "Cada um marca para si; coordenação e direção marcam para qualquer
+> pessoa, e cai direto na agenda dela, dizendo quem marcou."
 
 **P9.** Reunião e visita técnica bastam, ou falta um terceiro tipo?
 **P10.** Quem mais, além de coordenação e direção, precisaria marcar para os

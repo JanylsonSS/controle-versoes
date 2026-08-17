@@ -5,7 +5,7 @@
  * quando, e a tela mostra quem ainda falta.
  *
  * ── Mudança de 13/08/2026 ────────────────────────────────────────────
- * Confirmar deixou de BLOQUEAR. Antes o arquivo da revisão só abria
+ * Confirmar deixou de BLOQUEAR. Antes, o arquivo da mudança só abria
  * depois da confirmação; como o sistema não guarda mais arquivo e a
  * orientação já vira atividade na hora, travar não faz mais sentido —
  * atrasaria o trabalho sem proteger nada.

@@ -6,12 +6,13 @@
  *
  * ⚠️ Isto é gestão de tarefas — que o documento original pôs fora de
  *   escopo. Entrou por decisão posterior. Está numa aba própria, e não na
- *   tela do projeto, de propósito: a pergunta "qual versão vale?" não pode
- *   dividir espaço com um quadro de tarefas, senão o sistema deixa de
- *   responder rápido aquilo para que existe.
+ *   tela do projeto, de propósito: a pergunta "o que vale agora neste
+ *   projeto?" não pode dividir espaço com um quadro de tarefas, senão o
+ *   sistema deixa de responder rápido aquilo para que existe.
  *
- * A atividade NÃO tem relação com revisão. Mover um cartão não muda
- * versão nenhuma, não gera aviso e não exige ciência.
+ * Mover um cartão não muda orientação nenhuma, não gera aviso e não exige
+ * ciência: o quadro acompanha o trabalho; a informação do projeto mora
+ * nas orientações.
  * ══════════════════════════════════════════════════════════════════════ */
 
 import { PAPEIS } from './papeis.js';
@@ -20,6 +21,8 @@ import { PAPEIS } from './papeis.js';
 export const COLUNAS = {
   NAO_INICIADO: { rotulo: 'Não iniciado', classe: 'coluna-parada' },
   EM_EXECUCAO: { rotulo: 'Em execução', classe: 'coluna-andando' },
+  // "Revisão" aqui é conferir o serviço feito — não a revisão de arquivo
+  // do modelo antigo, que deixou de existir no pivô.
   REVISAO: { rotulo: 'Revisão', classe: 'coluna-revisao' },
   FINALIZADO: { rotulo: 'Finalizado', classe: 'coluna-pronta' },
 };

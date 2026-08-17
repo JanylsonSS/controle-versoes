@@ -1,5 +1,6 @@
-/* A agenda do calendário semanal: cada um marca para si; a coordenação
- * marca para os outros e o compromisso cai direto na agenda da pessoa. */
+/* A agenda do calendário semanal: cada um marca para si; coordenação e
+ * direção marcam para os outros e o compromisso cai direto na agenda
+ * da pessoa. */
 
 import { COMO, ok, secao, encerrar, api } from './ajuda.mjs';
 

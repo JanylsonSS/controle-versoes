@@ -42,7 +42,7 @@ export function atividadeVisivel(usuario, atividadeId) {
   return atividade;
 }
 
-/** Compromisso de agenda: só o participante, quem criou, ou a coordenação. */
+/** Compromisso de agenda: o participante, quem criou, coordenação ou direção. */
 export function compromissoAcessivel(usuario, compromissoId) {
   const compromisso = agenda.porId(compromissoId);
   if (!compromisso) throw new ErroApi(404, 'Compromisso não existe.');

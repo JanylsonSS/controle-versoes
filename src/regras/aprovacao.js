@@ -23,14 +23,14 @@
  * atividades não ficar travado esperando assinatura.
  * ══════════════════════════════════════════════════════════════════════ */
 
-import { PAPEIS } from './papeis.js';
+import { podeAprovar } from './papeis.js';
 
 /**
  * Quem pode dar o aval: CEO e coordenação de contratos.
- * (`aprova: true` em papeis.js.)
+ * É a regra de `podeAprovar` (papeis.js), com o nome que as rotas usam.
  */
 export function ehAprovador(usuario) {
-  return Boolean(usuario && PAPEIS[usuario.papel]?.aprova);
+  return podeAprovar(usuario);
 }
 
 /**
@@ -39,18 +39,15 @@ export function ehAprovador(usuario) {
  * Como a coordenação agora também publica, sem esta regra a Thayna
  * poderia publicar uma mudança de orçamento e aprová-la sozinha — o que
  * esvazia a aprovação. Quando isso acontecer, quem aprova é o outro.
+ *
+ * Devolve o PORQUÊ (texto para a tela explicar em vez de só recusar),
+ * ou null quando a pessoa pode aprovar.
  */
-export function podeAprovarEsta(usuario, revisao) {
-  if (!ehAprovador(usuario)) return false;
-  return revisao.publicada_por !== usuario.id;
-}
-
-/** Texto do porquê, para a tela explicar em vez de só recusar. */
-export function porQueNaoPodeAprovar(usuario, revisao) {
+export function porQueNaoPodeAprovar(usuario, orientacao) {
   if (!ehAprovador(usuario)) {
     return 'Aprovar alteração grande é atribuição da direção e da coordenação de contratos.';
   }
-  if (revisao.publicada_por === usuario.id) {
+  if (orientacao.publicada_por === usuario.id) {
     return 'Você publicou esta orientação, então quem aprova é a outra pessoa com essa atribuição.';
   }
   return null;

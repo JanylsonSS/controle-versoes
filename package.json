@@ -13,6 +13,7 @@
     "test": "node verificacao/executar.mjs",
     "verificar": "node verificacao/executar.mjs",
     "app": "npm --prefix frontend run dev",
-    "app:build": "npm --prefix frontend run build"
+    "app:build": "npm --prefix frontend run build",
+    "build": "npm --prefix frontend install && npm --prefix frontend run build"
   }
 }
