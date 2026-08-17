@@ -139,6 +139,23 @@ a:hover { text-decoration: underline; }
 
 .conteudo { padding: var(--sp-8); max-width: 1120px; width: 100%; margin: 0 auto; min-width: 0; }
 
+/* ─── Indicadores (R12) ────────────────────────────────────────────── */
+
+.indicadores-gerais {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--sp-3);
+}
+.indicador { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.indicador-valor { font-size: 26px; font-weight: 700; color: var(--fg-1); line-height: 1.1; }
+
+.tabela { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabela th {
+  text-align: left; color: var(--fg-3); font-weight: 600; font-size: 12px;
+  padding: 6px 10px 6px 0; border-bottom: 1px solid var(--border);
+}
+.tabela td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tabela tr:last-child td { border-bottom: none; }
+
 /* ─── Peças genéricas ──────────────────────────────────────────────── */
 
 .cartao {

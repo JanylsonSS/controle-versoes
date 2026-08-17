@@ -32,6 +32,11 @@ produto do pivô — legítima, mas **as metas ficaram sem instrumento**. Antes 
 piloto, a direção precisa dizer: as metas mudam, ou a medição volta noutra
 forma?
 
+**Desde 17/08 existe um candidato:** o painel de indicadores (R12) mede o que
+evita o erro em vez de quanto ele custou — tempo até a ciência, pendências
+por obra e por pessoa, fila de aval. A pergunta à direção vira: esses números
+servem de metas novas, ou o retrabalho volta a ser medido de outro jeito?
+
 ---
 
 ## Parte 2 — Decisões anteriores que continuam valendo
@@ -59,9 +64,10 @@ forma?
   (a cada 6 h + despedida do `recomecar`; falta só o destino fora do disco),
   rastro de toda troca de sessão (tabela `trocas_de_sessao`), cookie que
   morre com o navegador, confirmação para virar quem aprova, e smoke test
-  do frontend (6 cenários Playwright, `npm run test:ui`). O repositório
-  está limpo para o push (o banco de experimento saiu do rastreamento);
-  **falta só o responsável autenticar o GitHub e criar o remoto**.
+  do frontend (6 cenários Playwright, `npm run test:ui`). O código está no
+  GitHub desde 17/08: repositório **privado** `JanylsonSS/controle-versoes`
+  (a conta do estagiário de TI que mantém o sistema) — todo `git push` é
+  backup do código.
 - ⚠️ **Sem login, ciência e aval valem como fluxo, não como prova**: a
   sessão é trocável (registrada, mas trocável). Dizer isso à direção antes
   do piloto; vira prova quando o login (R16) chegar.
@@ -90,9 +96,9 @@ Três coisas esperam por essa decisão:
 
 ## Parte 4 — Decisões que tomei nesta migração, a revisar
 
-1. **A página do conjunto de obras não voltou** (R22 ficou parcial). O campo
-   existe e o formulário sugere nomes; a tela que listava as obras do conjunto
-   morreu com o HTML antigo. Voltar se alguém sentir falta.
+1. ~~A página do conjunto de obras não voltou~~ **Voltou em 17/08** (R22
+   completo): o valor na ficha vira link e a página lista as obras
+   correlatas, com o R19 valendo (obra de equipe alheia é só contagem).
 2. **Sem cookie, o sistema abre como o Álvaro** (primeiro do seed). É o
    "entrar como" do protótipo; vira 401 quando o login entrar. Documentado no
    código.
@@ -103,7 +109,7 @@ Três coisas esperam por essa decisão:
    aprovações). Sem atualização "ao vivo" — para 8 pessoas, recarregar na
    navegação basta.
 5. **O frontend tem só o smoke test** (6 cenários Playwright desde 17/08:
-   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 200
+   publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 218
    verificações cobrem API + backup. Cobertura decente do frontend continua
    decisão do time de TI.
 6. **Sem numeração visível de orientação.** Nem "nº 7": o histórico ordena por

@@ -48,7 +48,7 @@ npm run app:build               # compila o frontend para dist/
 node servidor.js                # sobe tudo em :3000
 npm run app                     # dev do frontend (Vite :5173 + proxy /api)
 npm run recomecar               # recria os dados de teste (com backup antes)
-npm test                        # as 200 verificações (API + backup)
+npm test                        # as 218 verificações (API + backup)
 npm run test:ui                 # o smoke do frontend (Playwright, build real)
 npm run backup                  # snapshot do banco agora → dados/backups/
 ```
@@ -95,6 +95,7 @@ src/
     orientacoes.js         publicar/editar, ciência, aval, /api/avisos
     atividades.js          quadro, mover, andamentos
     agenda.js              semana, marcar (para si e para outros)
+    indicadores.js           R12 — o painel da direção (restrito a quem aprova)
     indice.js              junta as tabelas de rotas
 ferramentas/
   backup.mjs               npm run backup
@@ -108,7 +109,8 @@ frontend/
     estilos.css            os tokens da marca (62) + todo o CSS
     App.jsx                sessão em contexto, rotas, barra lateral
     componentes/Janela.jsx <dialog> + <Campo> (rótulo + instrução)
-    telas/                 Inicio, Projeto, Quadro (com Abas), Aprovacoes
+    telas/                 Inicio, Projeto, Quadro (com Abas), Aprovacoes,
+                           Conjunto (R22), Indicadores (R12)
 verificacao/
   executar.mjs             npm test — porta 3999 e banco descartável
   ajuda.mjs                api(), COMO (pessoas por nome), ok/secao/encerrar
@@ -342,7 +344,7 @@ distância que separa clique de arraste.
 npm test
 ```
 
-**200 verificações em 7 suítes**, contra um servidor que o executor sobe em
+**218 verificações em 8 suítes**, contra um servidor que o executor sobe em
 **porta 3999 com banco descartável** (`dados-verificacao/`) — rodar os testes
 nunca toca nos dados da demonstração.
 
@@ -355,6 +357,7 @@ nunca toca nos dados da demonstração.
 | `04-api-atividades` | quadro, datas automáticas, PATCH parcial, FK do excluir |
 | `05-api-agenda` | semana, marcar para si/outros, validação de calendário |
 | `06-backup` | snapshot com o -wal, rotação × despedida, espelho (`// sem-servidor`) |
+| `07-api-indicadores` | o painel: restrição, números do seed, e sair da equipe zera a pendência |
 
 Cada bug corrigido em revisão tem uma verificação com o nome do bug — se
 alguém reintroduzir, o teste diz qual foi.

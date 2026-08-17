@@ -603,6 +603,84 @@ export const flags = {
       .run(quando ?? agora(), Number(usuarioId), Number(flagId)),
 };
 
+/* ─── Indicadores (R12) ─────────────────────────────────────────────────
+ * Números para a direção, calculados na hora sobre o que o sistema já
+ * grava — nenhuma tabela nova. A lição do R19 vale aqui também: aviso de
+ * quem SAIU da equipe é história (R6), não pendência — todo COUNT de
+ * pendentes reconfere a equipe atual com o mesmo EXISTS das leituras.
+ *
+ * `diasParaAtraso` vem de regras/ciencia.js (a regra não mora no SQL). */
+
+const AINDA_DA_EQUIPE = `EXISTS (
+  SELECT 1 FROM equipes e
+   WHERE e.projeto_id = o.projeto_id AND e.usuario_id = a.usuario_id
+)`;
+
+export const indicadores = {
+  gerais: (diasParaAtraso) =>
+    banco
+      .prepare(
+        `SELECT
+           (SELECT COUNT(*) FROM avisos a JOIN orientacoes o ON o.id = a.orientacao_id
+             WHERE a.confirmado_em IS NULL AND ${AINDA_DA_EQUIPE}) AS ciencias_pendentes,
+           (SELECT COUNT(*) FROM avisos a JOIN orientacoes o ON o.id = a.orientacao_id
+             WHERE a.confirmado_em IS NULL AND ${AINDA_DA_EQUIPE}
+               AND julianday('now') - julianday(a.enviado_em) >= ?) AS ciencias_atrasadas,
+           (SELECT ROUND(AVG((julianday(a.confirmado_em) - julianday(a.enviado_em)) * 24), 1)
+              FROM avisos a WHERE a.confirmado_em IS NOT NULL) AS tempo_medio_ciencia_horas,
+           (SELECT COUNT(*) FROM orientacoes WHERE muda_orcamento_ou_prazo = 1
+               AND aprovada_em IS NULL AND reprovada_em IS NULL) AS aval_esperando,
+           (SELECT ROUND(AVG((julianday(COALESCE(aprovada_em, reprovada_em)) - julianday(publicada_em)) * 24), 1)
+              FROM orientacoes WHERE muda_orcamento_ou_prazo = 1
+               AND COALESCE(aprovada_em, reprovada_em) IS NOT NULL) AS tempo_medio_aval_horas,
+           (SELECT COUNT(*) FROM orientacoes
+             WHERE julianday('now') - julianday(publicada_em) <= 30) AS orientacoes_30_dias`
+      )
+      .get(diasParaAtraso),
+
+  porObra: (diasParaAtraso) =>
+    banco
+      .prepare(
+        `SELECT p.id, p.codigo, p.nome, p.situacao,
+                (SELECT COUNT(*) FROM orientacoes o WHERE o.projeto_id = p.id) AS orientacoes,
+                (SELECT MAX(o.publicada_em) FROM orientacoes o WHERE o.projeto_id = p.id) AS ultima_publicada_em,
+                (SELECT COUNT(*) FROM avisos a JOIN orientacoes o ON o.id = a.orientacao_id
+                  WHERE o.projeto_id = p.id AND a.confirmado_em IS NULL
+                    AND ${AINDA_DA_EQUIPE}) AS ciencias_pendentes,
+                (SELECT COUNT(*) FROM avisos a JOIN orientacoes o ON o.id = a.orientacao_id
+                  WHERE o.projeto_id = p.id AND a.confirmado_em IS NULL AND ${AINDA_DA_EQUIPE}
+                    AND julianday('now') - julianday(a.enviado_em) >= ?) AS ciencias_atrasadas,
+                (SELECT COUNT(*) FROM atividades t
+                  WHERE t.projeto_id = p.id AND t.situacao != 'FINALIZADO') AS atividades_abertas
+           FROM projetos p
+          ORDER BY p.codigo`
+      )
+      .all(diasParaAtraso),
+
+  atividadesPorColuna: () =>
+    banco
+      .prepare('SELECT situacao, COUNT(*) AS quantidade FROM atividades GROUP BY situacao')
+      .all(),
+
+  porPessoa: (diasParaAtraso) =>
+    banco
+      .prepare(
+        `SELECT u.id, u.nome,
+                (SELECT COUNT(*) FROM avisos a JOIN orientacoes o ON o.id = a.orientacao_id
+                  WHERE a.usuario_id = u.id AND a.confirmado_em IS NULL
+                    AND ${AINDA_DA_EQUIPE}) AS ciencias_pendentes,
+                (SELECT COUNT(*) FROM avisos a JOIN orientacoes o ON o.id = a.orientacao_id
+                  WHERE a.usuario_id = u.id AND a.confirmado_em IS NULL AND ${AINDA_DA_EQUIPE}
+                    AND julianday('now') - julianday(a.enviado_em) >= ?) AS ciencias_atrasadas,
+                (SELECT COUNT(*) FROM andamentos an
+                  WHERE an.usuario_id = u.id
+                    AND julianday('now') - julianday(an.registrado_em) <= 30) AS andamentos_30_dias
+           FROM usuarios u
+          ORDER BY u.nome`
+      )
+      .all(diasParaAtraso),
+};
+
 /* ─── Trocas de sessão ──────────────────────────────────────────────────
  * O rastro do "entrar como" enquanto não há login (ver banco.js).
  * Nunca se apaga: é registro de auditoria, como os avisos. */

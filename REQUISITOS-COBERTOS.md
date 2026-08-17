@@ -53,7 +53,7 @@ compromissos que a direção aprovou:
 | **R9** | Papéis e permissões | ✅ — engenharia/arquitetura publicam; coordenação/direção publicam, aprovam, cadastram e marcam agenda para outros; orçamento/estágio consultam. Conferido no servidor, rota a rota |
 | **R10** | Acesso pelo celular no canteiro | ❌ **adiado por decisão de 13/08** — foco no desktop do escritório |
 | **R11** | Registro de incidentes de retrabalho | ❌ **REMOVIDO** — ver o aviso no topo |
-| **R12** | Indicadores de uso | ❌ não nesta fase |
+| **R12** | Indicadores de uso | ✅ **desde 17/08** — painel restrito a direção/coordenação: tempo médio até a ciência, pendências (com atraso) por obra e por pessoa, fila de aval, quadro. Calculado sobre o que o sistema já gravava — nasceu com o histórico inteiro. **É o candidato a instrumento das metas desde que o R11 saiu** |
 | **R14** | Confiável e sempre disponível | ❌ depende da hospedagem (pendência antiga) |
 | **R15** | Registro de informação externa | ✅ **desde 17/08** — o campo "De onde veio" da orientação ("pedido do cliente na reunião de 12/08", "ofício da prefeitura"), opcional, visível nas informações atuais e no histórico. A data de chegada reutiliza a data da mudança |
 

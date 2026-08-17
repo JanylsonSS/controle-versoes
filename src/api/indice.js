@@ -6,6 +6,7 @@ import { rotasDeProjetos } from './projetos.js';
 import { rotasDeOrientacoes } from './orientacoes.js';
 import { rotasDeAtividades } from './atividades.js';
 import { rotasDeAgenda } from './agenda.js';
+import { rotasDeIndicadores } from './indicadores.js';
 
 export const rotas = [
   ...rotasDeSessao,
@@ -13,4 +14,5 @@ export const rotas = [
   ...rotasDeOrientacoes,
   ...rotasDeAtividades,
   ...rotasDeAgenda,
+  ...rotasDeIndicadores,
 ];

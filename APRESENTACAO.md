@@ -210,7 +210,8 @@ mudança deveria esperar mesmo?
 
 **P15.** ⚠️ **A pergunta para a direção:** as metas do trimestre eram medidas
 pelo retrabalho. Sem essa medição no sistema, as metas mudam, ou ela volta de
-outra forma?
+outra forma? *(Mostre a tela Indicadores: tempo até a ciência, pendências,
+aval — é o candidato a instrumento novo. Pergunte se esses números servem.)*
 **P16.** Da lista do que falta, o que é mais urgente?
 **P17.** O que ficou faltando que eu nem mencionei? *(deixe o silêncio durar)*
 

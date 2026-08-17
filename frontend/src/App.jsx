@@ -8,6 +8,7 @@ import { Projeto } from './telas/Projeto.jsx';
 import { Quadro } from './telas/Quadro.jsx';
 import { Aprovacoes } from './telas/Aprovacoes.jsx';
 import { Conjunto } from './telas/Conjunto.jsx';
+import { Indicadores } from './telas/Indicadores.jsx';
 
 /* A sessão (quem sou, o que posso, quem existe) vive num contexto: toda
  * tela precisa dela e ela raramente muda — só no "entrar como". */
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="/projetos/:id/atividades" element={<Quadro />} />
               <Route path="/conjuntos/:nome" element={<Conjunto />} />
               <Route path="/aprovacoes" element={<Aprovacoes />} />
+              <Route path="/indicadores" element={<Indicadores />} />
               <Route path="*" element={<p className="vazio">Essa página não existe. <Link to="/">Voltar ao início</Link>.</p>} />
             </Routes>
           </main>
@@ -105,6 +107,11 @@ function Lateral() {
       {sessao.pode.aprovar && (
         <NavLink to="/aprovacoes" className={({ isActive }) => `lateral-item${isActive ? ' atual' : ''}`}>
           Aprovações {pendencias > 0 && <span className="chip chip-marca">{pendencias}</span>}
+        </NavLink>
+      )}
+      {sessao.pode.aprovar && (
+        <NavLink to="/indicadores" className={({ isActive }) => `lateral-item${isActive ? ' atual' : ''}`}>
+          Indicadores
         </NavLink>
       )}
 

@@ -51,7 +51,7 @@ Para recomeçar do zero (**pare o servidor antes**, Ctrl+C):
 npm run recomecar
 ```
 
-Para conferir que o servidor está inteiro — 200 verificações automáticas
+Para conferir que o servidor está inteiro — 218 verificações automáticas
 (API + backup), sem tocar nos dados da demonstração:
 
 ```bash
@@ -176,7 +176,7 @@ ferramentas/           backup manual e o servidor do smoke test
 frontend/              o aplicativo React (Vite)
   src/telas/           Início, Projeto, Quadro, Aprovações
   smoke/               os 6 cenários de navegador (npm run test:ui)
-verificacao/           as 200 verificações (npm test)
+verificacao/           as 218 verificações (npm test)
 dados/                 criado ao rodar: banco.db e backups/
 dist/                  o build do frontend (gerado; fora do git)
 ```
