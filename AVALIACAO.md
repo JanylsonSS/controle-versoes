@@ -1,5 +1,12 @@
 # AVALIAÇÃO — ferramenta pronta ou sistema sob medida?
 
+> **Documento histórico (04/08/2026).** Esta foi a análise que fundamentou a
+> decisão de construir sob medida, escrita quando o produto era "controle de
+> versões de arquivo". Em 13/08/2026 o produto pivotou para **orientações**
+> (ver PENDENCIAS.md) — o que só reforça a conclusão daqui: nenhuma
+> ferramenta pronta cobriria o fluxo específico que a coordenação definiu.
+> Mantido sem alterações, como registro do raciocínio da época.
+
 > Análise pedida antes de escrever código. Base: os 15 requisitos do documento
 > `Requisitos-Controle-de-Versao.docx` e a restrição da direção ("simples e dinâmico").
 > Data: 04/08/2026.

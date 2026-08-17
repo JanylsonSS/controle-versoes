@@ -1,571 +1,360 @@
 # Para quem vai mexer no código
 
-Documento de passagem para o time de TI. Explica **como o sistema é por dentro,
-por que é assim, e onde mexer** para cada tipo de mudança.
+Documento de passagem para o time de TI. Explica **como o sistema é por
+dentro, por que é assim, e onde mexer** para cada tipo de mudança.
 
-Se você só quer rodar e usar, o [README.md](README.md) basta. Este aqui é para
-quem vai manter.
+Se você só quer rodar e usar, o [README.md](README.md) basta.
 
 ---
 
-## 1. O que o sistema faz — e o que ele recusa fazer
+## 1. O que o sistema faz — e a história que explica o desenho
 
-Uma frase só:
+O produto de hoje nasceu de dois momentos:
 
-> ninguém trabalha, orça ou executa sobre uma versão de projeto que não seja a
-> vigente.
+1. **O problema original (julho/2026):** uma pavimentação foi executada sobre
+   uma versão antiga do projeto — a mudança não chegou em quem executava — e o
+   serviço foi refeito. O sistema nasceu para "ninguém trabalhar sobre versão
+   que não é a vigente".
+2. **O pivô (13/08/2026):** a coordenação definiu que a mudança de projeto
+   **não é um arquivo, é uma orientação** — "mudou o orçamento", "mudou a
+   estrutura" — endereçada a quem vai executá-la. Saíram as revisões numeradas
+   (R00→R03), a "versão vigente", o upload de arquivo e o bloqueio por ciência;
+   entraram as orientações, o vínculo automático com o quadro de atividades e
+   a agenda.
 
-Isso não é slogan, é **critério de decisão**. Toda vez que aparecer uma ideia
-nova, a pergunta é: "isso ajuda alguém a não usar a versão errada?". Se a
-resposta for não, provavelmente não entra.
+O critério de decisão continua o mesmo: **uma mudança não pode se perder no
+caminho até quem executa**. Ideia nova que não sirva a isso é candidata a
+ficar de fora.
 
-A direção deixou **fora de escopo**, por escrito: gestão financeira, aprovação
-regulatória, cronograma, edição de BIM/CAD, e chat entre pessoas. Isso explica
-coisas que parecem faltar de propósito.
-
-**Uma exceção, declarada:** planejamento de tarefas também estava fora, e entrou
-depois como o quadro de atividades (R25), a pedido da coordenação. Foi posto
-numa **aba separada** justamente para o escopo original — saber qual versão vale
-— continuar sendo a primeira coisa que a tela do projeto responde. Se você for
-mexer no quadro, mantenha essa separação.
-
-O que cada requisito (R1…R25) cobre e o que ficou de fora está em
-[REQUISITOS-COBERTOS.md](REQUISITOS-COBERTOS.md). As decisões em aberto estão em
-[PENDENCIAS.md](PENDENCIAS.md). **Leia os dois antes de mexer em regra de
-negócio** — muita coisa que parece arbitrária tem motivo registrado lá.
+Decisões e pendências estão em [PENDENCIAS.md](PENDENCIAS.md); o mapa
+requisito-a-requisito em [REQUISITOS-COBERTOS.md](REQUISITOS-COBERTOS.md).
+**Leia os dois antes de mexer em regra de negócio.**
 
 ---
 
 ## 2. Ambiente
 
-- **Node.js 22.5 ou mais novo.** Só isso.
-- **Zero dependências.** Não existe `npm install`, não existe `node_modules`,
-  não existe `package-lock.json`.
-- **Sem etapa de build.** Editou o arquivo, reinicia o servidor, pronto.
+Duas metades com filosofias diferentes, e é proposital:
+
+| | Servidor (`src/`, `servidor.js`) | Frontend (`frontend/`) |
+|---|---|---|
+| Dependências | **zero** — nem `npm install` | React, Vite, react-router |
+| Build | não tem | `npm run app:build` → `dist/` |
+| Por quê | é a parte que não pode apodrecer parada | interface rica e padrão de mercado |
 
 ```bash
-node servidor.js       # sobe (ou dois cliques no iniciar.bat, no Windows)
-npm run recomecar      # apaga tudo e recria os dados de teste
+npm --prefix frontend install   # 1ª vez numa máquina nova
+npm run app:build               # compila o frontend para dist/
+node servidor.js                # sobe tudo em :3000
+npm run app                     # dev do frontend (Vite :5173 + proxy /api)
+npm run recomecar               # recria os dados de teste
+npm test                        # as 177 verificações da API
 ```
 
-### Por que zero dependências
-
-Foi decisão consciente, não preguiça. A avaliação inicial
-([AVALIACAO.md](AVALIACAO.md)) apontou que o maior risco de construir sob medida
-não é construir — é **manter**, numa empresa sem equipe de TI dedicada. Um
-projeto sem dependências não tem `npm install` que quebra, não tem pacote que
-sai do ar, não tem CVE para acompanhar e não apodrece parado. Daqui a dois anos
-`node servidor.js` ainda sobe.
-
-O custo: o encanamento é escrito à mão — casamento de rotas, leitura de
-formulário, sessão por cookie e arquivos estáticos somam cerca de **60 linhas**,
-todas na seção "Encanamento" no fim de `src/web/roteador.js`. Se um dia o
-sistema crescer muito além destes requisitos, trocar por Express é meia hora —
-mas **não faça isso só por conforto**. A ausência de dependências é uma
-funcionalidade aqui, não uma limitação a superar.
-
-O que o Node moderno deu de graça e tornou isso possível:
-
-| Recurso | Substitui |
-|---|---|
-| `node:sqlite` (`DatabaseSync`) | better-sqlite3 / driver de banco |
-| `new Response(buf, {headers}).formData()` | multer / busboy |
-| `node:http` | Express |
-| Template literals | motor de templates |
+O que o Node moderno dá de graça no servidor: `node:sqlite` (sem driver),
+`node:http` (sem Express), template literals. **Não acrescente dependência ao
+servidor por conforto** — a ausência delas é uma funcionalidade.
 
 ---
 
 ## 3. Mapa do código
 
 ```
-servidor.js                  verificações de ambiente + sobe o http
-iniciar.bat                  atalho de dois cliques no Windows
+servidor.js                verificações de ambiente + /api/* + serve dist/ (SPA)
 src/
-  config.js                  NOME_EXIBICAO, porta, caminhos
+  config.js                NOME_EXIBICAO, porta, PASTA_DADOS (testes usam outra)
   persistencia/
-    banco.js                 conexão, esquema, migrações        ┐ únicos dois
-    repositorio.js           todas as consultas                 ┘ com SQL
-    seed.js                  dados de teste
-    pdf-exemplo.js           gera os PDFs fictícios do seed
-  regras/                    ← as decisões de negócio moram aqui
-    papeis.js                quem pode publicar, aprovar, cadastrar
-    visibilidade.js          quem vê qual projeto
-    notificacao.js           quem é avisado
-    ciencia.js               ciência obrigatória e o que ela trava
-    aprovacao.js             o que é alteração grande, quem dá o aval
-    cadastro.js              vocabulário: situação e tipo de obra
-    atividades.js            colunas do quadro e as datas automáticas
-    aviso-email.js           modelo do e-mail (envio ainda não existe)
-  web/
-    roteador.js              tabela de rotas + encanamento http
-    html.js                  escapar texto, formatar datas e valores
-    paginas/                 uma tela por arquivo
-publico/
-  estilo.css
-  copiar.js                  copiar o caminho da pasta
-  quadro.js                  arrastar cartão e abrir a janela de detalhes
+    banco.js               conexão, esquema, limpeza do modelo antigo   ┐ únicos
+    repositorio.js         todas as consultas                           ┘ com SQL
+    seed.js                dados de teste (agenda relativa a HOJE)
+  regras/                  ← as decisões de negócio moram aqui
+    papeis.js              quem publica, aprova, cadastra
+    visibilidade.js        quem vê qual projeto (R19)
+    notificacao.js         quem é avisado
+    ciencia.js             prazo de cobrança; ciência NÃO bloqueia
+    aprovacao.js           aval de orçamento/prazo — registro, não portão
+    atividades.js          colunas do quadro e datas automáticas
+    cadastro.js            vocabulário: situação e tipo de obra
+    aviso-email.js         modelo do e-mail (envio ainda não existe)
+  api/
+    http.js                encanamento: rotas, corpo JSON, erros, sessão
+    guardas.js             projetoVisivel & cia — o R19 em forma de função
+    sessao.js              /api/sessao, /api/notificacoes
+    projetos.js            listagem+busca, ficha agregada, cadastro, equipe, flags
+    orientacoes.js         publicar/editar, ciência, aval, /api/avisos
+    atividades.js          quadro, mover, andamentos
+    agenda.js              semana, marcar (para si e para outros)
+    indice.js              junta as tabelas de rotas
+frontend/
+  vite.config.js           proxy /api → :3000; build → ../dist
+  src/
+    api.js                 o único fetch do app + formatação de datas pt-BR
+    estilos.css            os 89 tokens do modelo + todo o CSS
+    App.jsx                sessão em contexto, rotas, barra lateral
+    componentes/Janela.jsx <dialog> + <Campo> (rótulo + instrução)
+    telas/                 Inicio, Projeto, Quadro (com Abas), Aprovacoes
 verificacao/
-  executar.mjs               `npm test` — roda tudo num banco separado
-  ajuda.mjs                  auxiliares comuns às verificações
-  01..07-*.mjs               as verificações
-dados/                       criado ao rodar: banco.db + arquivos enviados
+  executar.mjs             npm test — porta 3999 e banco descartável
+  ajuda.mjs                api(), COMO (pessoas por nome), ok/secao/encerrar
+  0*-*.mjs                 as suítes (00 fala direto com o repositório)
 ```
 
-### As três regras de organização
+### As quatro regras de organização
 
-**1. Só `banco.js` e `repositorio.js` conhecem SQL.** As telas pedem dados ao
-repositório e não sabem onde eles estão guardados. Trocar SQLite por Postgres é
-reescrever esses dois arquivos — nada mais. **Não escreva SQL numa página.**
-
-**2. `src/regras/` guarda o que a empresa pode mudar de ideia.** Cada arquivo é
-uma decisão de negócio, com o motivo escrito ao lado. Quando a coordenação
-mudar uma regra, a alteração deve caber em um desses arquivos. Se você se pegar
-espalhando um `if` de regra por três telas, pare: ele pertence a `regras/`.
-
-**3. Uma tela por arquivo em `web/paginas/`.** Cada uma começa dizendo quais
-requisitos atende. As páginas só montam HTML — não decidem nada.
+1. **Só `banco.js` e `repositorio.js` conhecem SQL.**
+2. **`src/regras/` guarda o que a empresa pode mudar de ideia**, um arquivo por
+   regra, com o motivo escrito. Um `if` de negócio espalhado por rotas é sinal
+   de que ele pertence a `regras/`.
+3. **A API serve decisões prontas, não matéria-prima.** Rótulos
+   (`situacao_rotulo`, colunas `{codigo, rotulo}`) e permissões calculadas
+   (`pode` na sessão, `pode_excluir` por cartão, `pode_corrigir` na ficha) vão
+   no JSON. O frontend que reimplementa regra do servidor está errado por
+   definição.
+4. **Toda rota que toca projeto passa por `guardas.js`.** `projetoVisivel`
+   devolve o projeto só depois de conferir o R19 — quem quer o dado é obrigado
+   a passar pela guarda. O mesmo para orientação, atividade e agenda.
 
 ---
 
 ## 4. Modelo de dados
 
-Dez tabelas. Todas em `src/persistencia/banco.js`.
+Nove tabelas, todas em `banco.js`:
 
 | Tabela | Para quê |
 |---|---|
-| `usuarios` | as 8 pessoas, com papel e e-mail. Sem senha (ver §12) |
-| `projetos` | a obra e sua ficha: cliente, contrato, prazo, situação, tipo, conjunto, link do Drive, caminho de rede |
-| `revisoes` | as versões, com a situação de cada uma (ver §5) |
-| `equipes` | quem trabalha em qual projeto — **a tabela mais importante** (ver §6) |
-| `avisos` | quem foi avisado de qual revisão e se confirmou (R5 + R6 na mesma linha) |
-| `acessos_versao_antiga` | quem abriu versão que não vale, e quando (R8) |
+| `usuarios` | as 8 pessoas, papel e e-mail. Sem senha (ver §10) |
+| `projetos` | a obra e sua ficha: cliente, contrato, prazos, situação, tipo, conjunto, link do Drive, caminho de rede |
+| `equipes` | quem trabalha em qual projeto — **a tabela mais importante** (§5) |
+| `orientacoes` | a mudança: título, data, descrição, responsável, aval (aprovada/reprovada), edição |
+| `avisos` | quem foi avisado de qual orientação e se confirmou (R5+R6 na mesma linha) |
+| `atividades` | o quadro: coluna, ordem, responsável, datas, e `orientacao_id` quando nasceu de uma mudança |
 | `andamentos` | o "commit": o que fiz, dificuldade, dúvida |
-| `incidentes` | retrabalho por versão errada, com custo e horas (R11) |
-| `flags_cadastro` | quem avisou que um campo do cadastro está errado |
-| `atividades` | o quadro kanban: cartão, coluna, responsável, ordem, datas (ver §7) |
+| `agenda` | reunião/visita por pessoa, com quem marcou |
+| `flags_cadastro` | a placa ⚑: quem avisou que um campo do cadastro está errado |
+
+`banco.js` também **dropa** as tabelas do modelo antigo (`revisoes`,
+`incidentes`, `acessos_versao_antiga`) em bancos criados antes do pivô — os
+dados delas não têm para onde migrar, o modelo mudou de forma.
 
 ### Invariantes que o código depende
 
-Não estão todos no banco como constraint — alguns dependem do repositório. Se
-você mexer em `revisoes.publicar` ou `revisoes.aprovar`, **preserve estes**:
-
-1. **No máximo uma revisão `VIGENTE` por projeto.** Pode haver zero (quando a
-   vigente é cancelada) — a tela trata isso com um aviso vermelho.
-2. **No máximo uma `AGUARDANDO_APROVACAO` por projeto.** Duas deixariam ambíguo
-   o que vem depois da vigente. Validado no roteador, ao publicar.
-3. **Aviso só nasce quando a revisão passa a valer.** Nunca ao publicar algo
-   que ainda espera aprovação — para a obra, nada mudou ainda.
-4. **Revisão nunca é apagada.** Superada e cancelada continuam na tabela (R3).
-5. **Atividade não encosta em revisão.** Mover cartão do quadro não muda versão,
-   não gera aviso e não exige ciência — ver §7.
-
----
-
-## 5. A máquina de estados da revisão
-
-É o coração do sistema. Vale desenhar na cabeça antes de mexer.
-
-```
-                    publicar (muda orçamento/prazo = não)
-                         │
-   [nova] ───────────────┼──────────────────────► VIGENTE
-     │                                              │
-     │ publicar (muda orçamento/prazo = sim)        │ outra revisão passa a valer
-     ▼                                              ▼
-  AGUARDANDO_APROVACAO ──── aprovar ──► VIGENTE   SUPERADA
-     │
-     └──────────────────── reprovar ──► CANCELADA (com motivo)
-
-  qualquer situação ────── cancelar ──► CANCELADA (com motivo)
-```
-
-- **`VIGENTE`** — é esta que a obra executa. Só ela.
-- **`AGUARDANDO_APROVACAO`** — publicada, mas ainda **não vale**. A anterior
-  continua vigente. Ninguém foi avisado.
-- **`SUPERADA`** — já valeu. Abrir fica registrado (R8).
-- **`CANCELADA`** — não pode ser usada. Continua no histórico.
-
-Quem aprova está em `regras/aprovacao.js`. A regra que mais gera dúvida:
-**ninguém aprova a própria revisão**. Como a coordenação publica *e* aprova, sem
-isso a aprovação vira formalidade.
+1. **A orientação mais recente do projeto é "a que vale".** Não há campo de
+   estado: é `ORDER BY publicada_em DESC LIMIT 1` (`atualDoProjeto`). Não crie
+   um campo "atual" — vira duas fontes de verdade.
+2. **Publicar é transacional e triplo:** orientação + atividade + avisos, tudo
+   ou nada (`orientacoes.publicar`).
+3. **Editar reabre a ciência SÓ da equipe atual, renovando o prazo.** O upsert
+   em `avisarEquipe` faz `ON CONFLICT DO UPDATE SET enviado_em, confirmado_em
+   = NULL`. Ex-membros não são tocados (não teriam como confirmar) e o editor
+   não deve ciência do que ele mesmo escreveu.
+4. **Aviso é histórico: nunca se apaga.** Quem sai da equipe deixa de LER o
+   conteúdo (o EXISTS de `avisos.doUsuario`/`atividades.doResponsavel`
+   reconfere a equipe atual), mas a linha fica — é o registro do R6.
+5. **Atividade não encosta em orientação ao mover.** Mudar de coluna não gera
+   aviso, não muda a orientação, não pede ciência.
+6. **Excluir atividade desfaz o vínculo antes** (`UPDATE orientacoes SET
+   atividade_id = NULL` na mesma transação) — senão a FK torna o cartão
+   inapagável.
+7. **Datas do quadro são do sistema** (`datasAoMover`): entrar em execução
+   carimba início; finalizar carimba fim; sair de finalizado **apaga** o fim.
 
 ---
 
-## 6. `equipes`: uma lista, dois usos
+## 5. `equipes`: uma lista, dois usos
 
 A tabela `equipes` decide **duas coisas ao mesmo tempo**:
 
-- **quem vê o projeto** (`regras/visibilidade.js`)
-- **quem é avisado quando ele muda** (`regras/notificacao.js`)
+- quem **vê** o projeto (`regras/visibilidade.js` + `api/guardas.js`);
+- quem é **avisado** quando ele muda (`regras/notificacao.js`).
 
-Isso é deliberado. Com duas listas separadas, mais cedo ou mais tarde alguém
-estaria numa e não na outra — enxergaria o projeto e não receberia aviso dele.
-Que é exatamente o buraco que custou a pavimentação de R$ 18.400.
+Com listas separadas, mais cedo ou mais tarde alguém estaria numa e não na
+outra — veria o projeto sem ser avisado. É exatamente o buraco que causou o
+prejuízo da pavimentação. **Não separe as duas.**
 
-**Se for tentado a separar as duas, leia o PENDENCIAS antes.**
+Exceção: coordenação e direção (`aprova: true` em `papeis.js`) veem tudo —
+são quem monta as equipes. Está em `veTodosOsProjetos`.
 
-Exceção: coordenação e direção enxergam todos os projetos, porque são quem monta
-as equipes e quem responde pela empresa. Está numa função só,
-`veTodosOsProjetos`.
-
-### Onde a visibilidade é aplicada
-
-Em **todas** as portas, no servidor — não é só esconder link:
-
-- lista de projetos, tela do projeto, tela da revisão
-- **download do arquivo** (`/arquivos/:id`)
-- avisos, retrabalho, formulário de incidente
-- páginas de conjunto
-
-Ao criar rota nova que toque um projeto, chame `enxerga(usuario, projetoId)` no
-roteador. Esqueceu = vazamento.
+A visibilidade vale **também nas leituras "por usuário"**: `/api/notificacoes`
+e `/api/avisos` reconferem a equipe atual no SQL. Isso foi um vazamento real
+achado em revisão — quem saía da equipe continuava lendo o conteúdo pelas
+notificações.
 
 ---
 
-## 7. O quadro de atividades
+## 6. Papéis e permissões
 
-O kanban da aba **Atividades**. É a parte mais recente e a que mais destoa do
-resto do sistema — vale entender antes de mexer.
+| Papel | vê | publica/edita orientação | aprova | cadastra projeto/equipe | marca agenda p/ outros |
+|---|---|---|---|---|---|
+| Engenharia, Arquitetura | só suas obras | ✓ | — | — | — |
+| Orçamento, Estágio | só suas obras | — | — | — | — |
+| Coordenação, Direção | **tudo** | ✓ | ✓ | ✓ | ✓ |
 
-### A regra que não pode ser quebrada
+Duas regras finas:
 
-**Atividade e revisão não se tocam.** Mover um cartão não muda versão vigente,
-não gera aviso e não exige ciência. Não existe coluna ligando `atividades` a
-`revisoes`, e é de propósito.
-
-O motivo é o objetivo do sistema: se um cartão puder mexer no que a obra
-executa, existe um segundo caminho para mudar a versão — e a pergunta "qual
-versão vale?" volta a ter duas respostas possíveis. O
-`07-quadro-de-atividades.mjs` tem três verificações que existem só para isso.
-**Se elas quebrarem, alguém acoplou as duas coisas.**
-
-Pelo mesmo motivo o quadro está numa **aba separada**, e não numa seção da tela
-do projeto: a versão vigente precisa ser a primeira coisa que alguém vê ao abrir
-uma obra.
-
-### Onde cada parte mora
-
-| Parte | Arquivo |
-|---|---|
-| Colunas e datas automáticas | `src/regras/atividades.js` |
-| Consultas e o movimento | `atividades` em `src/persistencia/repositorio.js` |
-| A tela, os cartões e a janela | `src/web/paginas/atividades.js` |
-| Arrastar e abrir a janela | `publico/quadro.js` |
-| Rotas | `roteador.js`, seção "Quadro de atividades" |
-
-As **abas** (Projeto e versões / Atividades) são a função `abas()`, exportada de
-`paginas/atividades.js` e usada também por `paginas/projeto.js`.
-
-### Datas: o sistema preenche, ninguém digita
-
-`datasAoMover()` em `regras/atividades.js` decide:
-
-- entrou em qualquer coluna que não seja "não iniciado" → marca `iniciada_em`,
-  se ainda não tiver;
-- chegou em "finalizado" → marca `finalizada_em`;
-- **saiu de "finalizado" → apaga `finalizada_em`**, senão a data mentiria.
-
-Data digitada à mão é o campo que mais fica errado, e data errada num sistema
-que se propõe a ser a fonte da verdade é pior que campo vazio.
-
-### Ordenação: renumera a coluna inteira
-
-`atividades.mover()` não tenta ser esperto com índices fracionários. Ele lê os
-ids da coluna de destino, insere o cartão na posição pedida e **renumera todos
-de 0 a n**, dentro de uma transação.
-
-É mais escrita do que o necessário, e de propósito: são poucos cartões por obra,
-e assim não existe estado meio torto se dois movimentos acontecerem perto um do
-outro. Não troque isso por algo mais eficiente sem uma razão medida.
-
-### Arrastar: por que não é a API do HTML
-
-`publico/quadro.js` usa **eventos de ponteiro** (`pointerdown` / `pointermove` /
-`pointerup`), e não a API de drag-and-drop do HTML. Motivo: a nativa **não
-funciona no toque**, e a obra usa celular. Com ponteiro é uma implementação só
-para mouse e dedo.
-
-Três coisas para não quebrar se for mexer:
-
-1. **`touch-action: none` no cartão.** Sem isso, o navegador rola a página em vez
-   de arrastar.
-2. **O limite de 6 pixels** separa clique de arraste. Sem ele, todo clique no
-   cartão vira um arraste de zero pixel e a janela nunca abre.
-3. **O `elementFromPoint` precisa que o fantasma tenha `pointer-events: none`**,
-   senão ele se detecta a si mesmo e a coluna alvo nunca é encontrada.
-
-Ao soltar, o cartão é movido na tela **antes** da resposta do servidor — esperar
-travaria a mão. Se o POST falhar, o cartão volta para onde estava e aparece um
-recado. Se der certo, a página recarrega, porque as datas quem decide é o
-servidor.
-
-### Funciona sem JavaScript
-
-Isto é requisito, não enfeite: se o `quadro.js` não carregar, a página continua
-utilizável.
-
-- o nome do cartão é um **link** para `?atividade=N`; o servidor então renderiza
-  aquele `<dialog>` com o atributo `open`;
-- dentro da janela há um **seletor de coluna** que faz, por formulário, o mesmo
-  que o arraste.
-
-Com JavaScript, o mesmo `<dialog>` é aberto com `showModal()` sem recarregar. Se
-você acrescentar algo ao quadro, mantenha os dois caminhos.
-
-### Uma sobreposição que ainda não foi resolvida
-
-Existem **duas** formas de registrar o que se está fazendo: o cartão do quadro
-(`atividades`) e o registro de andamento (`andamentos`, o "commit"). A equipe vai
-perguntar onde escrever.
-
-Isso está em aberto de propósito — a decisão depende de qual dos dois as pessoas
-usarem no piloto. As saídas prováveis são amarrar o andamento a uma atividade ou
-aposentar um dos dois. **Não resolva por conta própria**; está registrado em
-[PENDENCIAS.md](PENDENCIAS.md).
+- **Ninguém aprova a própria orientação** (`podeAprovarEsta`). Como a
+  coordenação publica E aprova, sem isso o aval viraria formalidade.
+- **Apagar atividade:** quem criou, ou coordenação/direção
+  (`podeExcluirAtividade`). A decisão vai pronta no JSON (`pode_excluir`).
 
 ---
 
-## 8. Onde mexer para cada tipo de mudança
+## 7. Contrato da API
+
+30 rotas em `/api/*`. Convenções:
+
+- **snake_case do banco direto no JSON** — sem camada de renomeação.
+- **Erro sempre `{ erro: "mensagem legível" }`** com o status certo. As
+  mensagens já são de tela, em português.
+- **Autor uniforme:** toda lista traz `autor_id`/`autor_nome`, além dos campos
+  específicos do domínio.
+- **Agregação onde a tela precisa:** `GET /api/projetos/:id` devolve a página
+  inteira (ficha, orientação atual + ciência, andamentos, equipe, flags,
+  `pode_corrigir`) — uma chamada, uma tela.
+- **POST/PUT/PATCH com corpo exigem `application/json`** (415 sem isso). POST
+  de ação sem corpo é aceito. Junto do cookie `HttpOnly + SameSite=Lax`, é a
+  defesa contra CSRF do protótipo.
+- Sessão: cookie `usuario_id`. Sem cookie → primeiro usuário do seed (o
+  protótipo abre logado de propósito; vira 401 quando o login Google entrar).
+
+---
+
+## 8. Frontend
+
+- **`api.js` é o único lugar que chama `fetch`.** Componente que quer dado
+  passa por ele; erro vira `Error` com a mensagem do servidor, pronta para o
+  `recado-erro`.
+- **`estilos.css` carrega os 89 tokens do modelo.** Não invente cor nova — se
+  precisar de uma, ela provavelmente já existe como token.
+- **`<Campo rotulo instrucao>`** é o padrão de formulário: todo campo do
+  sistema explica o que espera. Foi pedido do produto, não estética.
+- **A Janela é `<dialog>` nativo** — fecha no ✕, no Esc e no clique fora.
+- **O arrastar do quadro usa eventos de ponteiro**, não a API de drag do HTML
+  (que não funciona no toque). O limiar de 6px separa clique (abre a janela)
+  de arraste (move). Depois de soltar, a tela **sempre** recarrega do servidor
+  — certo ou errado, ela espelha o que foi salvo.
+- **A lateral recarrega projetos e o contador de aprovações a cada troca de
+  rota** — é o mecanismo de atualização do app inteiro; não crie um segundo.
+- Grids usam `minmax(0, 1fr)`/`min-width: 0` — sem isso o min-content estoura
+  a página em janela estreita (bug clássico; já aconteceu aqui).
+
+---
+
+## 9. Onde mexer para cada tipo de mudança
 
 | Quero… | Mexa em |
 |---|---|
 | trocar o nome que aparece na tela | `src/config.js` → `NOME_EXIBICAO` |
 | mudar quem publica / aprova / cadastra | `src/regras/papeis.js` |
-| mudar quem vê qual projeto | `src/regras/visibilidade.js` |
-| mudar quem recebe aviso | `src/regras/notificacao.js` |
-| mudar o que a ciência trava, ou o prazo de cobrança | `src/regras/ciencia.js` |
-| mudar o que conta como "alteração grande" | `src/regras/aprovacao.js` |
-| acrescentar situação ou tipo de obra | `src/regras/cadastro.js` |
-| mudar o texto do e-mail | `src/regras/aviso-email.js` |
-| acrescentar/renomear coluna do quadro | `src/regras/atividades.js` (`COLUNAS`) **e** o `CHECK` de `atividades` em `banco.js` — ver §9 |
-| mexer no arrastar dos cartões | `publico/quadro.js` — leia §7 antes |
-| acrescentar campo no cadastro | `banco.js` (`garantirColunas`) → `repositorio.js` → `paginas/novo-projeto.js` → `roteador.js` (`camposDoCadastro` e `deVoltaAoFormulario`) |
-| criar tela nova | arquivo em `web/paginas/` + linha na tabela `ROTAS` |
+| mudar quem vê qual projeto | `src/regras/visibilidade.js` (+ guardas usam) |
+| mudar o prazo de cobrança da ciência | `src/regras/ciencia.js` |
+| acrescentar coluna no quadro | `regras/atividades.js` (`COLUNAS`) **e** o `CHECK` de `atividades` em `banco.js` |
+| acrescentar situação ou tipo de obra | `src/regras/cadastro.js` (o `CHECK` de projetos não existe — só o vocabulário) |
+| acrescentar campo no cadastro do projeto | `banco.js` (coluna) → `repositorio.js` (criar E atualizar) → `api/projetos.js` (`camposDoCadastro`) → `frontend/.../Projeto.jsx` (`JanelaCadastro`) |
+| criar rota nova | arquivo da área em `src/api/` + **guarda de visibilidade** |
+| criar tela nova | `frontend/src/telas/` + rota no `App.jsx` |
+| mudar o texto do futuro e-mail | `src/regras/aviso-email.js` |
 | trocar de banco | só `banco.js` e `repositorio.js` |
 
-### Acrescentar um campo no cadastro — receita completa
-
-Foi o caminho mais percorrido até agora. São **quatro** lugares, nesta ordem:
-
-1. `banco.js` → acrescente a coluna no `garantirColunas('projetos', {...})`.
-   **Só adicione ao fim; nunca renomeie nem remova.**
-2. `repositorio.js` → `projetos.criar` e `projetos.atualizar` (as duas!).
-3. `paginas/novo-projeto.js` → o `<input>` em `camposDoProjeto`, e a linha na
-   ficha em `paginas/projeto.js` se for para aparecer lá.
-4. `roteador.js` → `camposDoCadastro` (lê do formulário) e
-   `deVoltaAoFormulario` (devolve em caso de erro de validação).
-
-Esquecer o passo 4 causa um bug silencioso: o campo salva na criação e some ao
-dar erro de validação.
-
 ---
 
-## 9. Migrações
+## 10. O que ainda não existe, e por quê
 
-O banco de quem já usou o sistema não pode ser apagado para caber um campo novo.
-Existem dois mecanismos em `banco.js`:
-
-**Coluna nova** — `garantirColunas(tabela, { coluna: 'TIPO DEFAULT x' })`. Lê o
-`PRAGMA table_info` e só faz `ALTER TABLE` se faltar. Idempotente.
-
-**Mudar um `CHECK`** — SQLite não altera constraint no lugar. É preciso
-reconstruir a tabela: criar a nova, copiar, `DROP`, `RENAME`. Já existe um
-exemplo funcionando: o bloco que acrescentou `AGUARDANDO_APROVACAO` à tabela
-`revisoes`. Ele se detecta pelo próprio SQL da tabela em `sqlite_master`, então
-roda uma vez e nunca mais. **Copie esse padrão** e lembre de
-`PRAGMA foreign_keys = OFF` durante o rebuild.
-
----
-
-## 10. Convenções
-
-- **Tudo em português**, inclusive nomes de variáveis, tabelas e funções. Quem
-  vai manter isto trabalha numa construtora brasileira; `revisoes.vigenteDoProjeto`
-  se lê melhor que `revisions.getCurrentByProject`.
-- **Todo texto de usuário passa por `esc()`** (`web/html.js`) antes de virar
-  HTML. Sem exceção.
-- **Transação é manual:** `banco.exec('BEGIN')` / `COMMIT` / `ROLLBACK` dentro de
-  `try/catch`. Veja `revisoes.publicar` como modelo.
-- **Datas são ISO no banco**, formatadas para pt-BR só na tela
-  (`html.js` → `dataHora`, `data`, `haQuantoTempo`).
-- **Comentário explica o porquê, não o quê.** O código já diz o que faz; o que
-  se perde é a razão de a regra ser aquela.
-- **Rotas com parte fixa vêm antes das com `:param`.** `/projetos/novo` precisa
-  estar acima de `/projetos/:id`, senão "novo" vira um id.
+| O quê | Trava |
+|---|---|
+| **Login de verdade** (conta Google) | precisa do endereço fixo para registrar no Google Cloud → depende da hospedagem. As contas são **Gmail comuns**, não Workspace: a autorização será uma lista de 8 contas mantida à mão |
+| **Envio do e-mail de aviso** | modelo e remetente prontos em `aviso-email.js`; o envio depende da hospedagem |
+| **Backup automático** | ⚠️ o GitHub não cobre: guarda o código, não `dados/banco.db`. Precisa de cópia periódica para o Drive |
+| **Celular/canteiro** | decisão de 13/08: foco no desktop. O layout não quebra, mas nada foi desenhado para o dedo |
+| **Medição de retrabalho** | o R11 foi **removido** no pivô — ver o aviso em REQUISITOS-COBERTOS.md |
 
 ---
 
 ## 11. Armadilhas que já custaram tempo
 
-Todas foram encontradas construindo isto. Estão aqui para não custarem de novo.
+Todas aconteceram de verdade neste projeto.
 
-**Caminho do Windows com acento quebra `new URL(...).pathname`.**
-O usuário desta máquina é `Fábio Ernesto`; o pathname vem percent-encoded
-(`F%C3%A1bio`) e nenhum `fs.existsSync` acha o arquivo. Use **sempre**
-`fileURLToPath(import.meta.url)`.
+**Caminho do Windows com acento quebra `new URL(...).pathname`.** O usuário
+desta máquina é `Fábio Ernesto`; o pathname vem percent-encoded e nenhum
+`existsSync` acha o arquivo. Use **sempre** `fileURLToPath`.
 
-**`npm run recomecar` falha com o servidor rodando.**
-No Windows o SQLite mantém o arquivo travado. O script detecta `EPERM`/`EBUSY` e
-avisa em português. Pare o servidor antes.
+**`decodeURIComponent` lança em encoding inválido.** Uma URL torta derrubou o
+processo inteiro (URIError síncrono no handler). Hoje: try/catch no
+`servidor.js` responde 400, e `casar()` decodifica só os `:params`, uma vez.
+Não reintroduza um decode "de passagem".
 
-**Cookie não vai em `Invoke-WebRequest -Headers @{Cookie=...}`.**
-Testes em PowerShell dão falso positivo: tudo responde como o usuário padrão.
-Para testar sessão, use `fetch` do Node com `headers: { cookie }`.
+**`npm run recomecar` falha com o servidor rodando** — o SQLite segura o
+arquivo no Windows. O script explica em português; pare o servidor antes.
 
-**PDF em `latin1` come travessão e aspas curvas.**
-`pdf-exemplo.js` tem um mapa WinAnsi para `—`, `–`, `"`, `'` etc. Sem ele o
-caractere vira lixo silenciosamente.
+**Cookie não vai em `Invoke-WebRequest -Headers @{Cookie=...}`.** Teste de
+sessão em PowerShell dá falso positivo (tudo responde como o usuário padrão).
+Use `fetch` do Node com `headers: { cookie }` — é o que `verificacao/ajuda.mjs`
+faz.
 
-**A área de transferência falha de dois jeitos diferentes.**
-`navigator.clipboard` só existe em contexto seguro — no endereço de rede
-(`http://192.168…`) não existe. `execCommand('copy')` funciona lá, mas exige
-clique real e alguns navegadores já recusam. `publico/copiar.js` tenta os dois e,
-se ambos falharem, seleciona o texto e manda usar Ctrl+C. **Sempre trate a
-rejeição da promise** — sem isso o usuário clica e não acontece nada.
+**Crase dentro de template literal quebra o `banco.js`.** O esquema é uma
+template string; um comentário SQL com `` `coluna` `` derruba o arquivo com
+erro apontando para a linha errada. Use aspas.
 
-**Navegador não abre `file:///G:/...` a partir de página web.** Trava de
-segurança, sem contorno. Por isso o caminho da pasta é um campo para copiar, e
-não um link.
+**Upsert de aviso, não INSERT OR IGNORE.** O IGNORE não renova `enviado_em` na
+edição — a ciência reaberta nascia "atrasada". Está certo em `avisarEquipe`;
+não "simplifique" de volta.
 
-**Checkbox repetido precisa de `getAll`.** `corpo.get('equipe')` devolve só o
-primeiro. `URLSearchParams` e `FormData` têm os dois métodos — o helper
-`todosOsValores` no roteador cobre isso.
+**PATCH parcial é `'campo' in corpo`,** não `corpo.campo ?? null` — senão
+campos omitidos são apagados em silêncio.
 
-**Crase dentro de template literal quebra o `banco.js`.** O esquema inteiro está
-numa template string. Um comentário SQL com `` `nome_da_coluna` `` derruba o
-arquivo com um erro de sintaxe que aponta para a linha errada. Use aspas.
+**Valores de coluna/situação vindos do cliente: validar com 400, nunca cair
+num default silencioso.** Um mover sem `situacao` já arrastou cartão para
+"Não iniciado" apagando a data de conclusão.
 
-**A API de drag-and-drop do HTML não funciona no toque.** Por isso
-`publico/quadro.js` usa eventos de ponteiro — uma implementação só, que serve
-mouse e dedo. Se for mexer: os cartões precisam de `touch-action: none` no CSS,
-senão o navegador rola a página em vez de arrastar o cartão.
+**O working directory do PowerShell persiste entre comandos.** Um `cd frontend`
+esquecido faz o próximo `npm test` falhar com "Missing script".
 
-**O computador tem vários IPv4, e só um serve para o celular.** VPN, Docker,
-WSL e Hyper-V criam endereços de faixa privada que parecem legítimos — nesta
-máquina são três, e dois não funcionam. Não dá para distinguir pelo número; o
-`servidor.js` separa **pelo nome do adaptador** e imprime os inúteis sob "Ignore
-estes". Se aparecer um adaptador novo que não serve, acrescente ao
-`ADAPTADORES_QUE_NAO_SERVEM`.
-
-E mesmo com o endereço certo, dois bloqueios são comuns: **VPN ativa** (muitas
-cortam o tráfego da rede local) e o **firewall do Windows** barrando o Node na
-primeira execução.
-
-**Upload sem dependência:** leia o corpo como Buffer e passe por
-`new Response(buffer, { headers: { 'content-type': tipoOriginal } }).formData()`.
-Funciona a partir do Node 18.
+**A API de drag-and-drop do HTML não funciona no toque** — por isso eventos de
+ponteiro. Se mexer no quadro: `touch-action: none` no cartão, e o limiar de
+distância que separa clique de arraste.
 
 ---
 
-## 12. O que ainda não existe, e por quê
-
-Nada disto é esquecimento — cada um tem um motivo registrado em
-[PENDENCIAS.md](PENDENCIAS.md).
-
-| O quê | Trava |
-|---|---|
-| **Login de verdade** (conta Google) | precisa de endereço fixo para registrar no Google Cloud → depende da hospedagem. Hoje há um seletor "entrar como", sem senha |
-| **Envio do e-mail** (R18) | o modelo e o remetente já estão no código; falta o envio, que também depende da hospedagem |
-| **Backup automático** | ⚠️ **o GitHub não cobre isto.** Ele versiona o código; o banco (`dados/banco.db`) e os arquivos ficam de fora, e de propósito — o `.gitignore` exclui `dados/`. O backup precisa ser cópia periódica do `banco.db` para o Drive |
-| **Arquivos no Drive** (R20) | hoje o sistema guarda o arquivo e também tem link + caminho da pasta. Migrar de vez é decisão de produção |
-| **Ver revisão em elaboração** (R7) | parcialmente resolvido pela aprovação; revisão não publicada o sistema não enxerga |
-
-### Duas dívidas técnicas conhecidas
-
-**A lista de contas autorizadas será manual.** As contas são Gmail comuns
-(`nome.promav@gmail.com`), não Google Workspace — então o login não poderá
-filtrar por domínio. Vai ser uma lista das 8 contas no código ou no banco, e
-tirar alguém que saiu da empresa é passo manual. Não deixe isso implícito quando
-construir o login.
-
-**A letra do drive (`G:`) é por máquina.** O caminho de rede cadastrado assume
-que todos têm a mesma letra. O aplicativo do Google Drive escolhe por
-computador. Vale padronizar antes que alguém confie nisso.
-
----
-
-## 13. Como verificar que você não quebrou nada
+## 12. Como verificar que você não quebrou nada
 
 ```bash
 npm test
 ```
 
-É só isso. Roda **251 verificações** em cerca de 20 segundos e diz o que quebrou.
+**177 verificações em 6 suítes**, contra um servidor que o executor sobe em
+**porta 3999 com banco descartável** (`dados-verificacao/`) — rodar os testes
+nunca toca nos dados da demonstração.
 
-Não há framework de teste — seria dependência. São sete scripts em JavaScript
-puro, na pasta `verificacao/`, que conversam com o sistema **pela porta**, do
-mesmo jeito que uma pessoa usaria. Nada de mock: se a verificação passa, o
-sistema funciona de verdade.
-
-| Script | Cobre |
+| Suíte | Cobre |
 |---|---|
-| `01-caso-pavimentacao` | o caso âncora de ponta a ponta |
-| `02-visibilidade` | R19: quem vê o quê, e o bloqueio no servidor |
-| `03-cadastro-e-equipe` | criar projeto, montar equipe, permissões |
-| `04-ficha-conjunto-andamento` | trava do arquivo, ficha, conjunto, o "commit" |
-| `05-aprovacao-e-avisos-de-cadastro` | R17 inteiro + placa de aviso |
-| `06-roteiro-da-apresentacao` | percorre o `APRESENTACAO.md` e confere se cada frase ainda bate com a tela |
-| `07-quadro-de-atividades` | o kanban, e a garantia de que ele **não** encosta em versão, aviso nem ciência |
+| `00-dominio` | o repositório direto, sem HTTP (marcada `// sem-servidor`) |
+| `01-api-sessao-e-notificacoes` | sessão, permissões, CSRF, a URL que matava o servidor |
+| `02-api-projetos` | busca, R19 na lista/item/leituras, cadastro, equipe, flags |
+| `03-api-orientacoes` | o ato triplo, edição reabrindo ciência, aval sem portão |
+| `04-api-atividades` | quadro, datas automáticas, PATCH parcial, FK do excluir |
+| `05-api-agenda` | semana, marcar para si/outros, validação de calendário |
 
-O último merece atenção especial: sempre que o sistema muda, ele aponta em
-segundos qual bloco do roteiro de demonstração ficou mentiroso. É barato manter
-e evita chegar numa reunião com um documento que não corresponde ao sistema.
+Cada bug corrigido em revisão tem uma verificação com o nome do bug — se
+alguém reintroduzir, o teste diz qual foi.
 
-### O executor não toca nos seus dados
-
-`verificacao/executar.mjs` usa **porta 3999 e a pasta `dados-verificacao/`**,
-apagada no fim. Dá para rodar `npm test` com a demonstração aberta na porta 3000
-sem perder nada do que estiver na tela — o que importa quando alguém pede "roda
-o teste rapidinho" no meio de uma apresentação.
-
-Isso vem das variáveis `PORTA` e `PASTA_DADOS`, lidas em `src/config.js`. Para
-cada script, o executor recria o banco do zero, sobe um servidor só para ele,
-roda e derruba — porque os scripts publicam, aprovam e cadastram de propósito,
-e sujam os dados.
-
-### Rodar um script sozinho
-
-Útil quando você está mexendo em uma área só:
-
-```bash
-npm run recomecar && node servidor.js     # numa janela
-node verificacao/02-visibilidade.mjs      # noutra
-```
-
-Assim ele fala com a porta 3000 e o banco normal — então **os dados ficam
-sujos**. Rode `npm run recomecar` depois.
+**O frontend não tem teste automatizado** (decisão de custo desta fase). A
+verificação é manual: `npm run app:build && node servidor.js` e percorrer
+início → projeto → atividades → aprovações com dois usuários (Álvaro e
+Thayna). O que conferir está no roteiro de [APRESENTACAO.md](APRESENTACAO.md).
 
 ### Escrevendo uma verificação nova
 
-Use `verificacao/ajuda.mjs`: `ok()`, `secao()`, `encerrar()`, `pegar()`,
-`form()`, `enviarArquivo()` e o mapa `COMO` com as pessoas por nome
-(`COMO.thayna` em vez de `usuario_id=7`). O nome do arquivo precisa começar com
-dois dígitos — é assim que o executor o encontra.
-
-Uma coisa que o `02-visibilidade` faz e vale copiar: ele **confere que a sessão
-é mesmo de quem se pediu** antes de testar qualquer outra coisa. Sem isso, um
-cookie que não pega faz tudo responder como o usuário padrão, e a verificação
-passa por engano.
-
-### Verificação manual mínima, se estiver sem os scripts
-
-1. Entrar como Álvaro → vê 2 projetos, 2 avisos pendentes
-2. Abrir a pavimentação → "3 de 5", arquivo bloqueado
-3. Confirmar → "4 de 5", arquivo abre
-4. Abrir a R02 no histórico → faixa "não é a versão que vale" + acesso registrado
-5. Como Lya, publicar marcando "muda orçamento ou prazo" → não vira vigente
-6. Como Matheus, aprovar → vira vigente e os avisos saem
-7. Como Micael, tentar `/projetos/1/publicar` → 403
+Use `verificacao/ajuda.mjs`: `api(metodo, rota, COMO.thayna, corpo)` devolve
+`{status, dados}`. O nome do arquivo começa com dois dígitos. Copie do
+`02` o padrão de conferir **quem a sessão realmente é** antes de testar — um
+cookie que não pega faz tudo passar como o usuário padrão.
 
 ---
 
-## 14. Antes de tocar em regra de negócio
-
-Três perguntas, nesta ordem:
+## 13. Antes de tocar em regra de negócio
 
 1. **Está em `PENDENCIAS.md`?** Muita coisa que parece errada é decisão
-   registrada, com o motivo. Algumas esperam resposta da coordenação.
-2. **A mudança cabe num arquivo de `regras/`?** Se não couber, provavelmente o
-   desenho está sendo forçado — vale conversar antes de espalhar `if`.
-3. **Isso ajuda alguém a não usar a versão errada?** Se não, é candidato a ficar
-   de fora — e a anotar no PENDENCIAS em vez de construir.
+   registrada com motivo — inclusive as reversões do pivô.
+2. **A mudança cabe num arquivo de `regras/`?** Se não couber, o desenho está
+   sendo forçado.
+3. **Isso ajuda uma mudança a chegar em quem executa?** Se não, é candidata a
+   ficar de fora — e a virar anotação no PENDENCIAS em vez de código.

@@ -2,6 +2,12 @@
 
 > Material para apresentar à direção. A decisão fica para depois da
 > apresentação do protótipo.
+>
+> **Nota da migração (14/08/2026):** o sistema agora tem um frontend em React
+> que precisa ser compilado no deploy (`npm run app:build` antes do
+> `node servidor.js`). Isso **não muda a recomendação** — os serviços de
+> publicação automática (opção 1) fazem esse build sozinhos a partir do
+> `package.json`; na VPS (opção 2) é uma linha a mais no script de deploy.
 
 ---
 

@@ -1,98 +1,86 @@
 # REQUISITOS COBERTOS
 
-Cada requisito do documento `Requisitos-Controle-de-Versao.docx` e o que foi
-feito nesta rodada. Serve para conferir na validação: "isto aqui já faz, isto
-ainda não".
+O documento original (`Requisitos-Controle-de-Versao.docx`, 30/07/2026) trouxe
+R1–R15. Depois vieram os pedidos da coordenação (R16–R24) e o pivô de
+13/08/2026, que **mudou o próprio objeto do sistema**: de versões numeradas de
+arquivo para **orientações** — a mudança como informação endereçada a quem
+executa.
 
-**Resumo:** os 7 Essenciais estão feitos. Dos 5 Importantes, **4 feitos** — o R7
-saiu de tabela junto com a aprovação — e 1 não (R14, que depende de hospedagem).
-Dos 3 Desejáveis, 1 feito, 1 parcial e 1 não. Dos requisitos novos pedidos
-depois do documento, **6 feitos, 2 parciais e 1 não** (o login, que espera a
-decisão de hospedagem).
+Este documento diz, requisito a requisito, o que vale hoje.
 
 ---
 
-## Essenciais — todos feitos
+## ⚠️ Antes da tabela: o que o pivô mudou de verdade
 
-| R | Requisito | Situação | Onde está | Como conferir |
-|---|---|---|---|---|
-| **R1** | Repositório central dos documentos | ✅ **Feito** | Cadastro de projeto, tela inicial e tela do projeto · `paginas/novo-projeto.js`, `paginas/inicio.js`, `paginas/projeto.js` | A coordenação cadastra o projeto e define a equipe; a partir daí ele aparece numa tela só, com o arquivo da versão vigente a um toque. Ninguém precisa perguntar a ninguém. |
-| **R2** | Identificação inequívoca da versão vigente | ✅ **Feito** | `componentes.js` (`blocoVigente`, `selo`) · três estados no banco: VIGENTE / SUPERADA / CANCELADA | A vigente ocupa o topo da tela, em verde, com o número grande e o rótulo "Execute por esta". Versão antiga abre com faixa âmbar; cancelada, com faixa vermelha. |
-| **R3** | Histórico de versões preservado | ✅ **Feito** | `repositorio.js` (`revisoes.publicar` nunca apaga) · seção "Histórico" | Publicar não sobrescreve: a anterior vira SUPERADA e continua na lista, com autor e data. A Pavimentação tem as 4 revisões. |
-| **R5** | Notificação automática a cada nova versão | ✅ **Feito** ⚑ | `regras/notificacao.js` · avisos criados dentro da mesma transação da publicação | Publicar gera o aviso sozinho — não é um segundo botão que dá para esquecer. Vai para a equipe do projeto (R19), não para a empresa toda, e a tela mostra antes quem será avisado. ⚑ falta sair também por e-mail (R18). |
-| **R6** | Confirmação de ciência pela área que recebe | ✅ **Feito** | `regras/ciencia.js` · tela de avisos · lista "quem já viu esta versão" | Um botão confirma; a tela mostra "3 de 5 confirmaram", com nome, papel e data, e quem falta. **Confirmar é obrigatório:** sem confirmar, o arquivo daquela revisão não abre — mas o texto do "o que mudou" fica sempre visível, para que a confirmação signifique alguma coisa. Cobrança a partir de 2 dias. |
-| **R8** | Acesso padrão sempre à versão vigente | ✅ **Feito** ⚑ | `paginas/projeto.js` (ordem da tela) · `acessos_versao_antiga` | O caminho normal só entrega a vigente. Chegar numa antiga exige rolar até o histórico e clicar — e o acesso fica registrado com nome e hora, visível na própria tela da revisão. |
-| **R13** | Simples e dinâmico de usar | ✅ **Feito** | todo o desenho | Ver a versão vigente: zero cliques (está na tela inicial). Confirmar ciência: um clique. Publicar: três campos e um botão. Sem menu escondido, sem jargão de sistema na tela. |
+Três coisas precisam estar ditas com todas as letras, porque alteram
+compromissos que a direção aprovou:
+
+1. **R11 (registro de retrabalho) foi REMOVIDO.** Era a linha de base das
+   metas do CEO ("menos revisões de retrabalho e menos horas refazendo").
+   Hoje o sistema não mede retrabalho. Se as metas trimestrais continuarem
+   valendo, essa medição precisa voltar de alguma forma — está registrado em
+   PENDENCIAS.md como decisão a revisitar com a direção.
+2. **R2 e R8 mudaram de natureza.** "Versão vigente inequívoca" e "acesso
+   padrão à vigente" viravam selos, bloqueios e registro de acesso a versão
+   antiga. Hoje a regra é mais simples: **a orientação mais recente é a que
+   vale**, o histórico existe para comparar, e nada bloqueia. A proteção
+   contra "executar informação velha" passou a ser o aviso + ciência + a
+   atividade criada em nome de quem executa.
+3. **A ciência (R6) não bloqueia mais nada.** Registra quem viu e quando, e
+   destaca quem está atrasado — mas ninguém fica impedido de trabalhar. A
+   decisão anterior (travar o arquivo) caiu junto com o arquivo.
 
 ---
 
-## Importantes
+## Os essenciais originais, no modelo de hoje
 
-| R | Requisito | Situação | Observação |
+| R | Original | Hoje | Situação |
 |---|---|---|---|
-| **R4** | Marcação de versão cancelada/obsoleta | ✅ **Feito** | Restrito a quem publica. Pede o motivo, que aparece na faixa vermelha. A versão fica riscada no histórico e continua preservada (R3). A R00 da Pavimentação está assim nos dados de teste. |
-| **R7** | Visibilidade antecipada de revisões em andamento | 🟡 **Parcial, de tabela** | Não foi construído para isso, mas o R17 entregou boa parte: uma revisão que muda orçamento ou prazo fica visível como *"vem mudança por aí"* **antes** de valer, e Contratos e Orçamento a veem na página do projeto. **Falta:** revisão que ainda está sendo desenhada e não foi publicada — essa o sistema continua não enxergando. |
-| **R9** | Papéis e permissões por área | ✅ **Feito** | `regras/papeis.js`. Engenharia e Arquitetura publicam e cancelam revisão; Coordenação e Direção cadastram projeto e montam equipe; Orçamento e Estágio consultam e recebem. A restrição é verificada no servidor, não só escondendo o botão. **Sem senha nesta rodada** — o seletor "entrar como" demonstra os papéis. |
-| **R11** | Registro de incidentes de versão incorreta | ✅ **Feito** | Tela "Retrabalho": data, o que aconteceu, versão que acabou sendo usada, custo e horas. Mostra o total acumulado — é a linha de base das metas. Qualquer pessoa pode registrar, porque quem vê o retrabalho é a obra. |
-| **R14** | Confiável e sempre disponível | ❌ **Não nesta rodada** | É requisito de operação, não de código: depende de onde o sistema for hospedado e de rotina de backup. Roda num computador só. O banco é um arquivo (`dados/banco.db`), então backup é copiar esse arquivo — mas isso não está automatizado. |
+| **R1** | Repositório central dos documentos | O sistema centraliza **as mudanças e o estado de cada obra**; os arquivos ficam no Drive da empresa, com link e caminho de rede na ficha | ✅ reinterpretado |
+| **R2** | Versão vigente inequívoca | "Informações atuais do projeto" = a última orientação, sempre no topo da página, com data e responsável | ✅ reinterpretado |
+| **R3** | Histórico preservado | Toda orientação fica no histórico (dropdown de comparação); editar registra quem e quando | ✅ |
+| **R5** | Notificação automática de mudança | Publicar avisa a equipe **na mesma transação** — não existe "esquecer de avisar". ⚑ o e-mail (R18) ainda não sai | ✅ (canal interno) |
+| **R6** | Confirmação de ciência | "Confirmo que vi" com data registrada; quem falta aparece em chip, atrasado ganha destaque; **editar reabre a ciência da equipe atual**. Não bloqueia | ✅ redefinido |
+| **R8** | Acesso padrão à versão vigente | O caminho natural (tela inicial, página do projeto) mostra sempre a orientação atual; a antiga só por escolha explícita no dropdown, marcada "não é a que vale" | ✅ reinterpretado |
+| **R13** | Simples e dinâmico | Interface React com o visual do modelo aprovado; publicar = 1 janela; confirmar = 1 clique; instrução em cada campo | ✅ |
+
+## Os demais originais
+
+| R | Original | Situação |
+|---|---|---|
+| **R4** | Marcar versão cancelada | ❌ **saiu no pivô** — sem versões, não há o que cancelar. O equivalente atual é editar a orientação (com ciência reaberta) ou publicar outra |
+| **R7** | Visibilidade antecipada de revisões | 🟡 parcial — a orientação que muda orçamento/prazo aparece na fila de aval e no projeto assim que publicada; trabalho ainda em desenho não aparece |
+| **R9** | Papéis e permissões | ✅ — engenharia/arquitetura publicam; coordenação/direção publicam, aprovam, cadastram e marcam agenda para outros; orçamento/estágio consultam. Conferido no servidor, rota a rota |
+| **R10** | Acesso pelo celular no canteiro | ❌ **adiado por decisão de 13/08** — foco no desktop do escritório |
+| **R11** | Registro de incidentes de retrabalho | ❌ **REMOVIDO** — ver o aviso no topo |
+| **R12** | Indicadores de uso | ❌ não nesta fase |
+| **R14** | Confiável e sempre disponível | ❌ depende da hospedagem (pendência antiga) |
+| **R15** | Registro de informação externa | ❌ não construído; a descrição da orientação cumpre parte do papel ("o cliente pediu em reunião…") |
+
+## Os pedidos da coordenação (R16–R24) e o que o pivô acrescentou
+
+| R | Pedido | Situação |
+|---|---|---|
+| **R16** | Login com conta Google | ❌ espera a hospedagem; contas são Gmail comuns → lista de 8 autorizados mantida à mão |
+| **R17** | Aval de mudança de orçamento/prazo | ✅ **redefinido em 13/08: registro, não portão.** A mudança já vale e a atividade já corre; o CEO/coordenação registram o aval (ou negam, com motivo) na fila própria. Ninguém aprova a própria |
+| **R18** | Aviso por e-mail com modelo padrão | 🟡 texto e remetente prontos no código; envio espera a hospedagem |
+| **R19** | Cada um vê só o que lhe diz respeito | ✅ — a equipe do projeto decide quem vê E quem é avisado; coordenação/direção veem tudo; vale inclusive nas notificações de quem **saiu** de uma equipe (corrigido em revisão adversarial) |
+| **R20** | Arquivos no Google Drive | ✅ **completado pelo pivô**: o sistema não guarda mais arquivo nenhum — só o link da pasta e o caminho de rede |
+| **R21** | Cadastro completo do projeto (+ placa ⚑) | ✅ — ficha com cliente, contrato, prazos, situação, tipo, conjunto; a placa avisa a coordenação de campo errado |
+| **R22** | Conjunto de obras correlatas | 🟡 o campo existe e o formulário sugere nomes já usados; a **página** do conjunto saiu na migração e não voltou |
+| **R23** | Registro de andamento (o "commit") | ✅ — na página do projeto: o que fiz, dificuldade, dúvida em aberto destacada |
+| **R25** | Quadro de atividades (kanban) | ✅ — aba própria, arrastar por ponteiro, datas automáticas, **atividade nasce sozinha de cada orientação publicada** |
+| **R26** | Agenda semanal (reunião/visita técnica) | ✅ **novo no pivô** — calendário na tela inicial; clicar no dia marca com instrução em cada campo; coordenação marca para qualquer pessoa e cai direto na agenda dela |
 
 ---
 
-## Desejáveis
+## Fora de escopo — o que continua de fora
 
-| R | Requisito | Situação | Observação |
-|---|---|---|---|
-| **R10** | Acesso pelo celular no canteiro | ✅ **Feito** ⚑ | Saiu de graça por ter sido feito para o celular desde o começo. Testado a 375 px: sem rolagem lateral, botões de 48 px. O servidor imprime o endereço de rede para abrir no telefone. ⚑ falta confirmar com a obra se há sinal e aparelho no canteiro. |
-| **R12** | Indicadores de uso e de revisões | 🟡 **Parcial** | Saiu de graça a contagem de revisões por projeto (na tela inicial) e o total de retrabalho com custo e horas. **Não tem** evolução no tempo nem volume de acessos à versão vigente — isso exigiria registrar todo acesso, e ficou fora. |
-| **R15** | Registro de informação externa que chega de fora | ❌ **Não nesta rodada** | Não sai de graça: pede um segundo tipo de anexo, com data de recebimento, ao lado do projeto. Anotado como próximo passo. |
+Gestão financeira e custos de obra; aprovação regulatória; cronograma de obra
+(a agenda marca compromissos de pessoas, não planeja serviços); edição de
+BIM/CAD; chat entre pessoas (o aviso é do sistema sobre uma mudança; a
+descrição da orientação e do compromisso são texto endereçado, não conversa).
 
----
-
----
-
-## Requisitos novos (pedidos depois do documento original)
-
-Surgiram das decisões da direção em 05/08/2026. Estão detalhados na Parte 2 do
-[PENDENCIAS.md](PENDENCIAS.md) e **precisam entrar no documento oficial de
-requisitos**.
-
-| R | Requisito | Situação | Observação |
-|---|---|---|---|
-| **R16** | Login com a conta Google da Promav | ❌ **Não nesta rodada** | Decidido, mas depende do endereço fixo que só existe depois de escolher a hospedagem. Construir antes seria refazer. O seletor "entrar como" continua para a demonstração. |
-| **R17** | Aprovação de alteração grande pelo CEO ou pela Coordenação | ✅ **Feito** | `regras/aprovacao.js` + menu "Aprovações". Uma pergunta ao publicar — *"muda orçamento ou prazo?"*. Se sim, a revisão fica **aguardando aprovação**: não vale, a anterior continua vigente e ninguém é avisado. Depois do aval ela vira vigente e os avisos saem. **Ninguém aprova a própria revisão.** Não aprovar exige motivo, e a revisão fica no histórico como cancelada. |
-| **R18** | Aviso por e-mail com modelo padrão | 🟡 **Parcial** | Texto do modelo e conta remetente (`engenharia.promav@gmail.com`) guardados em `regras/aviso-email.js`. **O envio não existe** — depende da hospedagem. |
-| **R19** | Cada pessoa vê apenas o que lhe diz respeito | ✅ **Feito** | `regras/visibilidade.js` + tabela `equipes`. A coordenação cadastra o projeto e marca quem trabalha nele; só essas pessoas veem o projeto **e** recebem aviso. Uma lista, dois usos — é impossível ver um projeto sem ser avisado dele. Coordenação e direção enxergam tudo (decisão minha, ver PENDENCIAS). O bloqueio é verificado no servidor em todas as telas, inclusive no download do arquivo. |
-| **R20** | Arquivos no Google Drive | 🟡 **Parcial** | Dois caminhos até a pasta: **link do Drive** (abre no navegador, serve no celular) e **caminho `G:\...`** com botão de copiar (para quem abre pelo explorador de arquivos). O caminho não é clicável porque navegador nenhum abre pasta local a partir de uma página web. Os arquivos por revisão continuam em `dados/arquivos` — migrar de vez é decisão de produção. |
-| **R21** | Cadastro completo do projeto | ✅ **Feito** | Cliente, número do contrato, início, prazo, situação da obra e tipo. Preenchido e corrigido pela coordenação. Vocabulário em `regras/cadastro.js`. |
-| **R22** | Conjunto de obras correlatas | ✅ **Feito** | Campo com sugestão dos conjuntos já usados, e página listando as obras do conjunto. Agrupa mas não manda: cada obra mantém equipe, vigente e histórico próprios. |
-| **R21b** | Placa de aviso de cadastro errado | ✅ **Feito** | Um ⚑ ao lado de cada campo da ficha: quem vir algo errado avisa a coordenação sem sair da tela. A placa avisa, não edita — corrigir continua sendo da coordenação. |
-| **R25** | Quadro de atividades (kanban) | ✅ **Feito** | Aba própria no projeto, com as colunas Não iniciado · Em execução · Revisão · Finalizado. Cartão com nome, responsável e desde quando; janela de detalhes com a descrição. Arrasta no dedo e no mouse. **Mover cartão não muda versão, não gera aviso e não exige ciência** — há verificação automática garantindo. ⚠️ É gestão de tarefas, que o documento original excluía: entrou por decisão posterior. |
-| **R23** | Registro de andamento (o "commit") | ✅ **Feito** | O que fiz · dificuldade · dúvida em aberto, por qualquer pessoa da equipe. **Não é revisão**: não numera, não muda a vigente e não gera aviso — para não transformar cada anotação numa versão e embaralhar o R2. |
-
-**Efeito colateral do R19 no R7:** ao restringir o aviso à equipe do projeto,
-parte do incômodo que motivava o R7 (informação chegando a quem não precisa, e
-tarde para quem precisa) diminui. O R7 em si — ver que uma revisão *está vindo* —
-continua não implementado.
-
----
-
-## Fora de escopo
-
-Conforme a definição da direção, nada disto existe no sistema, nem "de brinde":
-gestão financeira ou custos de obra (o R11 registra o custo **de um incidente**,
-que é medição de retrabalho, não controle de custos); aprovação regulatória;
-cronograma; edição de BIM/CAD (o sistema versiona e distribui arquivos, não os
-abre para editar); e **chat ou mensageria entre pessoas** — o aviso é gerado
-pelo sistema sobre uma mudança de versão, e não há nenhum lugar onde uma pessoa
-escreva para outra.
-
-### ⚠️ Uma exceção, declarada
-
-**Planejamento de tarefas** estava nessa lista e **entrou** depois, como o
-quadro de atividades (R25), a pedido da coordenação. Está registrado aqui para
-a direção saber que o escopo foi ampliado — e para que ninguém descubra isso
-por acidente numa reunião.
-
-Foi construído numa aba separada justamente para que o escopo original — saber
-qual versão vale — continue sendo a primeira coisa que a tela do projeto
-responde.
+**Exceções declaradas ao escopo original, acumuladas:** o quadro de
+atividades (R25), a agenda (R26) e a migração para React — todas por pedido
+da coordenação, todas registradas em PENDENCIAS.md com data.
