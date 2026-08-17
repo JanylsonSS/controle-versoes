@@ -16,7 +16,7 @@ import {
 } from '../regras/cadastro.js';
 import { estaAtrasado } from '../regras/ciencia.js';
 import { ErroApi, exigir, texto, textoOpcional } from './http.js';
-import { projetoVisivel } from './guardas.js';
+import { enxerga, projetoVisivel } from './guardas.js';
 
 /** O cartão da listagem: a ficha resumida + a última orientação. */
 function cartao(p) {
@@ -121,6 +121,20 @@ export const rotasDeProjetos = [
 
   ['GET', '/api/projetos/:id', ({ usuario, params }) =>
     fichaCompleta(usuario, projetoVisivel(usuario, params.id))],
+
+  /* R22 — as obras correlatas num lugar só. O R19 continua valendo:
+   * aparecem os cartões dos projetos que a pessoa enxerga; os demais
+   * viram só uma contagem, sem revelar nome nem conteúdo. */
+  ['GET', '/api/conjuntos/:nome', ({ usuario, params }) => {
+    const obras = projetos.doConjunto(params.nome);
+    if (!obras.length) throw new ErroApi(404, 'Não existe conjunto com esse nome.');
+    const visiveis = obras.filter((p) => enxerga(usuario, p.id));
+    return {
+      nome: params.nome,
+      projetos: visiveis.map(cartao),
+      escondidas: obras.length - visiveis.length,
+    };
+  }],
 
   ['POST', '/api/projetos', ({ usuario, corpo }) => {
     exigir(podeCadastrarProjeto(usuario), 403,

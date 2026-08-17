@@ -72,7 +72,7 @@ compromissos que a direção aprovou:
 | **R19** | Cada um vê só o que lhe diz respeito | ✅ — a equipe do projeto decide quem vê E quem é avisado; coordenação/direção veem tudo; vale inclusive nas notificações de quem **saiu** de uma equipe (corrigido em revisão adversarial) |
 | **R20** | Arquivos no Google Drive | ✅ **completado pelo pivô**: o sistema não guarda mais arquivo nenhum — só o link da pasta e o caminho de rede |
 | **R21** | Cadastro completo do projeto (+ placa ⚑) | ✅ — ficha com cliente, contrato, prazos, situação, tipo, conjunto; a placa avisa a coordenação de campo errado |
-| **R22** | Conjunto de obras correlatas | 🟡 o campo existe e o formulário sugere nomes já usados; a **página** do conjunto saiu na migração e não voltou |
+| **R22** | Conjunto de obras correlatas | ✅ **completo desde 17/08** — o campo com sugestão de nomes já usados, e a **página do conjunto de volta**: o valor na ficha vira link, as obras aparecem em cartões (as que o R19 esconde viram só contagem) |
 | **R23** | Registro de andamento (o "commit") | ✅ — na página do projeto: o que fiz, dificuldade, dúvida em aberto destacada |
 | **R25** | Quadro de atividades (kanban) | ✅ — aba própria, arrastar por ponteiro, datas automáticas, **atividade nasce sozinha de cada orientação publicada** |
 | **R26** | Agenda semanal (reunião/visita técnica) | ✅ **novo no pivô** — calendário na tela inicial; clicar no dia marca com instrução em cada campo; coordenação e direção marcam para qualquer pessoa e o compromisso cai direto na agenda dela |

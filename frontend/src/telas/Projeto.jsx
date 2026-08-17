@@ -337,7 +337,10 @@ function Ficha({ dados, aoMudar, aoEditarCadastro, aoEditarEquipe }) {
     ['data_inicio', 'Início', dataBr(projeto.data_inicio)],
     ['prazo', 'Prazo', dataBr(projeto.prazo)],
     ['local', 'Onde é', projeto.local],
-    ['conjunto', 'Conjunto', projeto.conjunto],
+    // O conjunto vira link para a página das obras correlatas (R22).
+    ['conjunto', 'Conjunto', projeto.conjunto && (
+      <Link to={`/conjuntos/${encodeURIComponent(projeto.conjunto)}`}>{projeto.conjunto}</Link>
+    )],
   ];
 
   return (

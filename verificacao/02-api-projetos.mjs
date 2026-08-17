@@ -125,4 +125,19 @@ r = await api('GET', '/api/avisos', COMO.matheus);
 ok('a direção continua vendo tudo (exceção do R19)',
    r.dados.avisos.some((a) => a.projeto_nome === 'UBS Centro'));
 
+secao('8. R22 — a página do conjunto de obras');
+const conjunto = encodeURIComponent('Reformas de Escolas 2026');
+r = await api('GET', `/api/conjuntos/${conjunto}`, COMO.thayna);
+ok('a coordenação vê as 2 escolas do conjunto',
+   r.dados.projetos.length === 2 && r.dados.escondidas === 0,
+   r.dados.projetos.map((p) => p.codigo).join(', '));
+r = await api('GET', `/api/conjuntos/${conjunto}`, COMO.luiza);
+ok('a Luiza (nas duas equipes) também vê as 2',
+   r.dados.projetos.length === 2 && r.dados.escondidas === 0);
+r = await api('GET', `/api/conjuntos/${conjunto}`, COMO.alvaro);
+ok('o Álvaro (em nenhuma) só descobre a contagem — R19 na página',
+   r.dados.projetos.length === 0 && r.dados.escondidas === 2);
+r = await api('GET', '/api/conjuntos/NaoExiste', COMO.thayna);
+ok('conjunto inexistente é 404', r.status === 404);
+
 encerrar();

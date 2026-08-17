@@ -145,30 +145,35 @@ function ProjetosAtivos() {
       )}
 
       <div className="grade-projetos">
-        {dados.projetos.map((p) => (
-          <Link key={p.id} to={`/projetos/${p.id}`} className="cartao cartao-projeto">
-            <span className="codigo">{p.codigo} · {p.tipo_rotulo}</span>
-            <span className="nome">{p.nome}</span>
-            <span>
-              <span className="chip chip-info">{p.situacao_rotulo}</span>
-              {p.local && <span className="meta"> · {p.local}</span>}
-            </span>
-            {p.orientacao_atual ? (
-              <span className="orientacao">
-                <span className="titulo">{p.orientacao_atual.titulo}</span>
-                <br />
-                <span className="meta">
-                  {dataBr(p.orientacao_atual.data_da_mudanca)}
-                  {p.orientacao_atual.responsavel_nome && <> · {p.orientacao_atual.responsavel_nome}</>}
-                </span>
-              </span>
-            ) : (
-              <span className="vazio">Ainda sem orientação publicada.</span>
-            )}
-          </Link>
-        ))}
+        {dados.projetos.map((p) => <CartaoProjeto key={p.id} p={p} />)}
       </div>
     </section>
+  );
+}
+
+/** O cartão da grade de projetos — a tela do conjunto (R22) usa o mesmo. */
+export function CartaoProjeto({ p }) {
+  return (
+    <Link to={`/projetos/${p.id}`} className="cartao cartao-projeto">
+      <span className="codigo">{p.codigo} · {p.tipo_rotulo}</span>
+      <span className="nome">{p.nome}</span>
+      <span>
+        <span className="chip chip-info">{p.situacao_rotulo}</span>
+        {p.local && <span className="meta"> · {p.local}</span>}
+      </span>
+      {p.orientacao_atual ? (
+        <span className="orientacao">
+          <span className="titulo">{p.orientacao_atual.titulo}</span>
+          <br />
+          <span className="meta">
+            {dataBr(p.orientacao_atual.data_da_mudanca)}
+            {p.orientacao_atual.responsavel_nome && <> · {p.orientacao_atual.responsavel_nome}</>}
+          </span>
+        </span>
+      ) : (
+        <span className="vazio">Ainda sem orientação publicada.</span>
+      )}
+    </Link>
   );
 }
 

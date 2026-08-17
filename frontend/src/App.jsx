@@ -7,6 +7,7 @@ import { Inicio } from './telas/Inicio.jsx';
 import { Projeto } from './telas/Projeto.jsx';
 import { Quadro } from './telas/Quadro.jsx';
 import { Aprovacoes } from './telas/Aprovacoes.jsx';
+import { Conjunto } from './telas/Conjunto.jsx';
 
 /* A sessão (quem sou, o que posso, quem existe) vive num contexto: toda
  * tela precisa dela e ela raramente muda — só no "entrar como". */
@@ -36,6 +37,7 @@ export default function App() {
               <Route path="/" element={<Inicio />} />
               <Route path="/projetos/:id" element={<Projeto />} />
               <Route path="/projetos/:id/atividades" element={<Quadro />} />
+              <Route path="/conjuntos/:nome" element={<Conjunto />} />
               <Route path="/aprovacoes" element={<Aprovacoes />} />
               <Route path="*" element={<p className="vazio">Essa página não existe. <Link to="/">Voltar ao início</Link>.</p>} />
             </Routes>
