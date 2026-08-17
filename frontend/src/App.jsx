@@ -66,9 +66,18 @@ function Lateral() {
     carregarSessao();
   }
 
+  // A marca no espírito do logotipo: PRO | MAV, com o divisor dourado.
+  // O nome vem da config; dividimos ao meio ("Promav" → PRO|MAV).
+  const nome = sessao.aplicacao.nome.toUpperCase();
+  const metade = Math.ceil(nome.length / 2);
+
   return (
     <aside className="lateral">
-      <div className="lateral-marca">{sessao.aplicacao.nome.toLowerCase()}</div>
+      <div className="lateral-marca">
+        {nome.slice(0, metade)}
+        <span className="divisor">|</span>
+        <span className="forte">{nome.slice(metade)}</span>
+      </div>
 
       <NavLink to="/" end className={({ isActive }) => `lateral-item${isActive ? ' atual' : ''}`}>
         Início

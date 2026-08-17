@@ -223,8 +223,13 @@ Duas regras finas:
 - **`api.js` é o único lugar que chama `fetch`.** Componente que quer dado
   passa por ele; erro vira `Error` com a mensagem do servidor, pronta para o
   `recado-erro`.
-- **`estilos.css` carrega os 89 tokens do modelo.** Não invente cor nova — se
-  precisar de uma, ela provavelmente já existe como token.
+- **`estilos.css` carrega os tokens da marca.** A paleta vem do logotipo
+  oficial (preto #201E1F + dourado #A68E71, medidos pixel a pixel da imagem
+  `logo promav fundo cinza.png`); a estrutura (raios, espaços, sombras) vem do
+  modelo "Promav App". Não invente cor nova — e respeite a regra de contraste
+  escrita no cabeçalho do arquivo: **dourado puro nunca é texto em fundo
+  claro** (3.1:1); texto dourado usa `--brand-forte`, e texto sobre dourado é
+  sempre o preto da marca.
 - **`<Campo rotulo instrucao>`** é o padrão de formulário: todo campo do
   sistema explica o que espera. Foi pedido do produto, não estética.
 - **A Janela é `<dialog>` nativo** — fecha no ✕, no Esc e no clique fora.

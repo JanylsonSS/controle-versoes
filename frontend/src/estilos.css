@@ -1,8 +1,20 @@
 /* ══════════════════════════════════════════════════════════════════════
  * Estilo do Promav.
  *
- * Os tokens vêm do modelo visual aprovado ("Promav App offline") — não
- * invente cor nova: se precisar de uma, ela provavelmente já existe aqui.
+ * A PALETA vem do logotipo oficial ("logo promav fundo cinza.png"),
+ * medida pixel a pixel em 14/08/2026:
+ *   preto quente  #201E1F  (média de 97 mil pixels do monograma)
+ *   dourado       #A68E71  (média de 44 mil pixels do V/A)
+ * A ESTRUTURA (raios, espaços, sombras, tipos) segue o modelo "Promav
+ * App offline". Não invente cor nova: se precisar de uma, ela
+ * provavelmente já existe aqui.
+ *
+ * Regra de contraste da marca (WCAG, medida):
+ *   dourado puro sobre claro = 3.1:1 → SÓ decorativo (bordas, selos);
+ *   texto dourado em fundo claro usa --brand-forte (#746043, 6.0:1);
+ *   texto sobre dourado é sempre o preto da marca (5.3:1);
+ *   ação primária é o preto da marca com texto branco (16.6:1).
+ *
  * Foco no desktop do escritório; o mobile fica para outra rodada.
  * ══════════════════════════════════════════════════════════════════════ */
 
@@ -10,50 +22,55 @@
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* Marca (índigo) */
-  --brand: #4B3FE4;
-  --brand-hover: #3E33CC;
-  --brand-pressed: #332AAD;
-  --brand-soft: #ECEBFD;
-  --brand-soft-2: #DEDBFB;
-  --brand-ink: #1E1B4B;
+  /* Marca (do logotipo) */
+  --brand: #A68E71;        /* o dourado champanhe — acento, nunca texto em fundo claro */
+  --brand-forte: #746043;  /* o dourado que pode ser texto/link em fundo claro */
+  --brand-hover: #96805F;
+  --brand-soft: #F1EBE2;   /* bege de fundo */
+  --brand-soft-2: #E5DBCC;
+  --brand-ink: #201E1F;    /* o preto quente do monograma — lateral, títulos */
   --brand-contrast: #FFFFFF;
 
-  /* Neutros */
-  --fg-1: #1B1A2E;
-  --fg-2: #4A4960;
-  --fg-3: #6E6D85;
-  --fg-4: #9B9AAE;
-  --bg: #FFFFFF;
-  --bg-subtle: #F7F7FB;
-  --bg-muted: #F0F0F6;
-  --surface: #FFFFFF;
-  --surface-2: #FBFBFE;
-  --border: #E7E7F0;
-  --border-strong: #D6D6E4;
-  --overlay: rgba(27, 26, 46, .45);
+  /* Ação primária = o preto da marca */
+  --acao: #201E1F;
+  --acao-hover: #3A3633;
+  --acao-pressed: #121011;
 
-  /* Semânticas */
+  /* Neutros quentes (acompanham o preto #201E1F, sem a tinta azulada) */
+  --fg-1: #1E1C1B;
+  --fg-2: #4C4843;
+  --fg-3: #706A63;
+  --fg-4: #9C968E;
+  --bg: #FFFFFF;
+  --bg-subtle: #F6F5F3;
+  --bg-muted: #EEECE8;
+  --surface: #FFFFFF;
+  --surface-2: #FBFAF8;
+  --border: #E7E4DF;
+  --border-strong: #D8D3CB;
+  --overlay: rgba(32, 30, 31, .5);
+
+  /* Semânticas (funcionais, não de marca — não dourar estados) */
   --success: #1FA463; --success-soft: #E4F6EE;
-  --warning: #E8920C; --warning-soft: #FCEFD7;
-  --danger:  #E5484D; --danger-soft:  #FCE7E8;
-  --info:    #2D7FF9; --info-soft:    #E5F0FE;
+  --warning: #B97D0A; --warning-soft: #FCEFD7;
+  --danger:  #D4434A; --danger-soft:  #FCE7E8;
+  --info:    #2D6FCC; --info-soft:    #E7F0FB;
 
   /* Colunas do quadro */
-  --status-todo: #8A8AA3;     --status-todo-soft: #EEEEF3;
-  --status-progress: #2D7FF9; --status-progress-soft: #E5F0FE;
+  --status-todo: #8B857D;     --status-todo-soft: #EFEDEA;
+  --status-progress: #2D6FCC; --status-progress-soft: #E7F0FB;
   --status-done: #1FA463;     --status-done-soft: #E4F6EE;
 
-  /* Raios, espaçamento, sombras, movimento */
+  /* Raios, espaçamento, sombras, movimento (estrutura do modelo) */
   --r-xs: 6px; --r-sm: 8px; --r-md: 10px; --r-lg: 14px; --r-xl: 20px; --r-full: 999px;
   --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
   --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px;
-  --shadow-xs: 0 1px 2px rgba(27, 26, 46, .06);
-  --shadow-sm: 0 1px 2px rgba(27, 26, 46, .06), 0 1px 3px rgba(27, 26, 46, .08);
-  --shadow-card: 0 1px 2px rgba(27, 26, 46, .05), 0 4px 10px rgba(27, 26, 46, .05);
-  --shadow-md: 0 6px 16px rgba(27, 26, 46, .10);
-  --shadow-lg: 0 16px 40px rgba(27, 26, 46, .16);
-  --shadow-focus: 0 0 0 3px rgba(75, 63, 228, .22);
+  --shadow-xs: 0 1px 2px rgba(32, 30, 31, .06);
+  --shadow-sm: 0 1px 2px rgba(32, 30, 31, .06), 0 1px 3px rgba(32, 30, 31, .08);
+  --shadow-card: 0 1px 2px rgba(32, 30, 31, .05), 0 4px 10px rgba(32, 30, 31, .05);
+  --shadow-md: 0 6px 16px rgba(32, 30, 31, .10);
+  --shadow-lg: 0 16px 40px rgba(32, 30, 31, .16);
+  --shadow-focus: 0 0 0 3px rgba(166, 142, 113, .38);
   --ease: cubic-bezier(.2, .7, .3, 1);
   --dur-fast: 120ms; --dur: 180ms;
 }
@@ -75,7 +92,7 @@ h3 {
   color: var(--fg-3); margin: 0 0 var(--sp-3);
 }
 p { margin: 0 0 var(--sp-2); }
-a { color: var(--brand); text-decoration: none; }
+a { color: var(--brand-forte); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* ─── O esqueleto: sidebar escura + conteúdo ───────────────────────── */
@@ -89,9 +106,11 @@ a:hover { text-decoration: underline; }
   position: sticky; top: 0; height: 100vh; overflow-y: auto;
 }
 .lateral-marca {
-  font: 800 20px/1 var(--font-sans); color: #fff; letter-spacing: -0.02em;
-  padding: var(--sp-2) var(--sp-3) var(--sp-5);
+  font: 300 17px/1 var(--font-sans); color: #fff; letter-spacing: .32em;
+  padding: var(--sp-2) var(--sp-3) var(--sp-5); text-transform: uppercase;
 }
+.lateral-marca .divisor { color: var(--brand); font-weight: 400; margin: 0 .1em; }
+.lateral-marca .forte { font-weight: 600; }
 .lateral a { color: inherit; text-decoration: none; }
 .lateral-item {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
@@ -99,7 +118,7 @@ a:hover { text-decoration: underline; }
   transition: background var(--dur-fast) var(--ease);
 }
 .lateral-item:hover { background: rgba(255, 255, 255, .08); }
-.lateral-item.atual { background: var(--brand); color: #fff; }
+.lateral-item.atual { background: var(--brand); color: var(--brand-ink); font-weight: 600; }
 .lateral-titulo {
   font: 600 11px/1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase;
   color: rgba(255, 255, 255, .45); padding: var(--sp-4) var(--sp-3) var(--sp-2);
@@ -127,7 +146,7 @@ a:hover { text-decoration: underline; }
   padding: 3px 10px; border-radius: var(--r-full); white-space: nowrap;
 }
 .chip-neutra  { background: var(--bg-muted); color: var(--fg-2); }
-.chip-marca   { background: var(--brand-soft); color: var(--brand-pressed); }
+.chip-marca   { background: var(--brand-soft); color: var(--brand-forte); }
 .chip-sucesso { background: var(--success-soft); color: var(--success); }
 .chip-alerta  { background: var(--warning-soft); color: var(--warning); }
 .chip-perigo  { background: var(--danger-soft); color: var(--danger); }
@@ -141,8 +160,8 @@ a:hover { text-decoration: underline; }
   text-decoration: none;
 }
 .botao:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
-.botao-primario { background: var(--brand); color: var(--brand-contrast); }
-.botao-primario:hover { background: var(--brand-hover); }
+.botao-primario { background: var(--acao); color: var(--brand-contrast); }
+.botao-primario:hover { background: var(--acao-hover); }
 .botao-neutro { background: var(--surface); color: var(--fg-1); border-color: var(--border-strong); }
 .botao-neutro:hover { background: var(--bg-muted); }
 .botao-quieto { background: transparent; color: var(--fg-2); }
@@ -220,7 +239,7 @@ dialog.janela::backdrop { background: var(--overlay); }
   background: var(--brand-soft); border-radius: var(--r-md); padding: var(--sp-3);
   font-size: 13px;
 }
-.cartao-projeto .orientacao .titulo { font-weight: 600; color: var(--brand-pressed); }
+.cartao-projeto .orientacao .titulo { font-weight: 600; color: var(--brand-forte); }
 
 /* Calendário semanal */
 .calendario { margin-top: var(--sp-6); }
@@ -240,7 +259,7 @@ dialog.janela::backdrop { background: var(--overlay); }
   border-radius: var(--r-xs); padding: 4px 6px; font-size: 11.5px; line-height: 1.3;
   overflow: hidden;
 }
-.compromisso.reuniao { background: var(--brand-soft); color: var(--brand-pressed); }
+.compromisso.reuniao { background: var(--brand-soft); color: var(--brand-forte); }
 .compromisso.visita { background: var(--success-soft); color: var(--success); }
 .compromisso .hora { font-weight: 700; }
 
@@ -252,7 +271,7 @@ dialog.janela::backdrop { background: var(--overlay); }
   padding: 10px 14px; color: var(--fg-3); font-weight: 600; text-decoration: none;
   border-bottom: 2px solid transparent; margin-bottom: -1px;
 }
-.abas a.atual { color: var(--brand); border-bottom-color: var(--brand); }
+.abas a.atual { color: var(--brand-forte); border-bottom-color: var(--brand); }
 .abas a:hover { text-decoration: none; color: var(--fg-1); }
 
 .orientacao-atual { border-left: 4px solid var(--brand); }
@@ -320,7 +339,7 @@ dialog.janela::backdrop { background: var(--overlay); }
 }
 .cartao-atividade .nome { font-weight: 600; display: block; }
 .cartao-atividade.arrastando { opacity: .35; }
-.cartao-atividade .vinculo { color: var(--brand); font-size: 11px; font-weight: 600; }
+.cartao-atividade .vinculo { color: var(--brand-forte); font-size: 11px; font-weight: 600; }
 
 .fantasma {
   position: fixed; z-index: 60; pointer-events: none; transform: rotate(1.5deg);

@@ -128,7 +128,7 @@ protótipo não há senha):
 | Banco | SQLite embutido (`node:sqlite`) | um arquivo; backup é copiar o arquivo |
 | API | JSON em `/api/*` (30 rotas) | contrato limpo para o frontend e para as verificações |
 | Frontend | **React + Vite** (`frontend/`) | decisão de 13/08/2026, seguindo o modelo visual aprovado; é o padrão que o time de TI vai encontrar no mercado |
-| Visual | os 89 tokens do modelo "Promav App" | marca #4B3FE4, lateral #1E1B4B, Plus Jakarta Sans |
+| Visual | a paleta do **logotipo oficial** sobre a estrutura do modelo "Promav App" | preto #201E1F e dourado #A68E71, medidos da imagem do logo; Plus Jakarta Sans |
 
 **O custo declarado do React:** `frontend/` tem `node_modules`, build e
 dependências para acompanhar — exatamente o que o servidor evita. A troca foi

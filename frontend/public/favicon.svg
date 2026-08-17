@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- As duas cores do logotipo: o quadrado preto do monograma e o V/A dourado,
+       reduzidos ao essencial para caber numa aba de navegador. -->
+  <rect width="64" height="64" rx="12" fill="#201E1F"/>
+  <path d="M14 48 V16 h5 l13 20 13-20 h5 v32 h-6 V27 L32 45 20 27 v21 z" fill="#A68E71"/>
+</svg>
