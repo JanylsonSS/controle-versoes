@@ -50,7 +50,11 @@ forma?
 - **A letra `G:` do Drive é por máquina** — conferir com o TI se é igual em
   todas antes de confiar no caminho de rede.
 - **Modelo do e-mail de aviso** aprovado e guardado em
-  `src/regras/aviso-email.js`, remetente `engenharia.promav@gmail.com`.
+  `src/regras/aviso-email.js` (adaptado ao modelo de orientações no pivô),
+  remetente `engenharia.promav@gmail.com`.
+- **O quadro de atividades (R25)** entrou por pedido da coordenação ainda no
+  modelo antigo, antes do pivô; o pivô o promoveu a destino automático de
+  cada orientação publicada.
 
 ---
 
@@ -96,8 +100,9 @@ Três coisas esperam por essa decisão:
 ## Parte 5 — Perguntas em aberto
 
 1. **As metas da direção sem o R11** — ver Parte 1. A mais importante.
-2. **Quanto custou de verdade a pavimentação?** O número (R$ 18.400 / 24 h)
-   segue fictício no seed e não deve ser apresentado como real. Ele era a
+2. **Quanto custou de verdade a pavimentação?** O número fictício que o
+   protótipo exibia (R$ 18.400 / 24 h) saiu junto com o retrabalho — o
+   sistema não guarda mais valor nenhum. Mas a pergunta continua: era a
    linha de base — conversa com a obra, pendente desde o início.
 3. **A fórmula do prazo mínimo** (antecedência entre publicar uma mudança e
    ela virar serviço) ficou órfã do modelo antigo, mas a pergunta continua

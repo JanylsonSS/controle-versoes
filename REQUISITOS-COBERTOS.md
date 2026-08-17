@@ -1,7 +1,7 @@
 # REQUISITOS COBERTOS
 
 O documento original (`Requisitos-Controle-de-Versao.docx`, 30/07/2026) trouxe
-R1–R15. Depois vieram os pedidos da coordenação (R16–R24) e o pivô de
+R1–R15. Depois vieram os pedidos da coordenação (R16–R23) e o pivô de
 13/08/2026, que **mudou o próprio objeto do sistema**: de versões numeradas de
 arquivo para **orientações** — a mudança como informação endereçada a quem
 executa.
@@ -57,7 +57,7 @@ compromissos que a direção aprovou:
 | **R14** | Confiável e sempre disponível | ❌ depende da hospedagem (pendência antiga) |
 | **R15** | Registro de informação externa | ❌ não construído; a descrição da orientação cumpre parte do papel ("o cliente pediu em reunião…") |
 
-## Os pedidos da coordenação (R16–R24) e o que o pivô acrescentou
+## Os pedidos da coordenação (R16–R23) e o que o pivô acrescentou (R25–R26)
 
 | R | Pedido | Situação |
 |---|---|---|
@@ -82,5 +82,6 @@ BIM/CAD; chat entre pessoas (o aviso é do sistema sobre uma mudança; a
 descrição da orientação e do compromisso são texto endereçado, não conversa).
 
 **Exceções declaradas ao escopo original, acumuladas:** o quadro de
-atividades (R25), a agenda (R26) e a migração para React — todas por pedido
-da coordenação, todas registradas em PENDENCIAS.md com data.
+atividades (R25, pedido pela coordenação antes do pivô), a agenda (R26) e a
+migração para React (ambas no pivô de 13/08) — todas registradas em
+PENDENCIAS.md.

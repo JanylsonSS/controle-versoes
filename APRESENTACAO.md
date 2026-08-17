@@ -72,7 +72,8 @@ algo?
 > visível numa linha."
 
 **Mostrar:** o botão "Confirmo que vi esta mudança" — clicar. O chip do
-Álvaro fica verde com data e hora.
+Álvaro fica verde — a data e a hora ficam guardadas (aparecem ao passar o
+mouse no chip; não conte com o tooltip no projetor).
 
 > "Um clique, e ficou registrado quando ele soube. Não trava nada — a pessoa
 > trabalha; o que existe é o registro que acaba com o 'eu não fui avisado'."
@@ -91,8 +92,8 @@ avisado", ou precisa cobrar mais forte?
 de greide". O painel abre marcado **"orientação antiga — não é a que vale"**.
 
 > "As mudanças anteriores ficam guardadas para comparar — o caso clássico é o
-> cliente pedir em reunião algo que já foi diferente. A antiga abre do lado,
-> sempre marcada como antiga."
+> cliente pedir em reunião algo que já foi diferente. A antiga abre logo
+> abaixo, sempre marcada como antiga."
 
 **P4.** Comparar assim resolve a conversa com o cliente, ou falta ver duas
 lado a lado?
@@ -221,8 +222,9 @@ outra forma?
 **P18.** Qual das quatro opções? (Recomendação: PaaS pago, ~R$ 40/mês — menos
 manutenção, que é nosso ponto fraco. O deploy agora inclui o build do
 frontend, que o PaaS faz sozinho.)
-**P19.** **Quanto custou de verdade a pavimentação?** (R$ e dias — o número do
-sistema é inventado e está escrito isso nele.)
+**P19.** **Quanto custou de verdade a pavimentação?** (R$ e dias. O sistema
+não guarda mais esse número — a medição de retrabalho saiu no pivô, ver P15;
+o dado serve à direção para decidir se ela volta.)
 **P20.** Matheus consegue criar as credenciais do login no Google Cloud?
 **P21.** Sobrenome da Rafaela para o cadastro.
 **P22.** A conta do Micael fica `micaias.promav@gmail.com` ou recriam?
@@ -251,7 +253,7 @@ sistema é inventado e está escrito isso nele.)
 | P16 | 9 | O que é mais urgente do que falta? | |
 | P17 | 9 | **O que ficou faltando que eu nem mencionei?** | |
 | P18 | 10 | Qual hospedagem? | |
-| P19 | 10 | **Custo real da pavimentação (R$ e dias)** | |
+| P19 | 10 | **Custo real da pavimentação (R$ e dias)** — o sistema não guarda mais; ver P15 | |
 | P20 | 10 | Matheus cria as credenciais no Google Cloud? | |
 | P21 | 10 | Sobrenome da Rafaela | |
 | P22 | 10 | Conta do Micael: fica ou recriam? | |

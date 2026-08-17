@@ -89,7 +89,7 @@ frontend/
   vite.config.js           proxy /api → :3000; build → ../dist
   src/
     api.js                 o único fetch do app + formatação de datas pt-BR
-    estilos.css            os 89 tokens do modelo + todo o CSS
+    estilos.css            os tokens da marca (62) + todo o CSS
     App.jsx                sessão em contexto, rotas, barra lateral
     componentes/Janela.jsx <dialog> + <Campo> (rótulo + instrução)
     telas/                 Inicio, Projeto, Quadro (com Abas), Aprovacoes
@@ -350,7 +350,7 @@ Thayna). O que conferir está no roteiro de [APRESENTACAO.md](APRESENTACAO.md).
 
 Use `verificacao/ajuda.mjs`: `api(metodo, rota, COMO.thayna, corpo)` devolve
 `{status, dados}`. O nome do arquivo começa com dois dígitos. Copie do
-`02` o padrão de conferir **quem a sessão realmente é** antes de testar — um
+`01` o padrão de conferir **quem a sessão realmente é** antes de testar — um
 cookie que não pega faz tudo passar como o usuário padrão.
 
 ---

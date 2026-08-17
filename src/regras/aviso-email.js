@@ -1,14 +1,10 @@
 /* ══════════════════════════════════════════════════════════════════════
  * R18 — MODELO DO E-MAIL DE AVISO
  *
- * ⚠️ O ENVIO AINDA NÃO EXISTE. Este arquivo guarda apenas o texto
- *   aprovado pela coordenação em 06/08/2026, para que ele não se perca
- *   num documento e para que, quando o envio for construído, não seja
- *   preciso reescrever nada.
- *
- *   A tela "Ver o e-mail que sairia" na página da revisão mostra o
- *   resultado deste modelo — assim dá para conferir o texto com a equipe
- *   antes de ligar o envio de verdade.
+ * ⚠️ O ENVIO AINDA NÃO EXISTE. Este arquivo guarda o texto aprovado pela
+ *   coordenação (estrutura de 06/08/2026, adaptada ao modelo de
+ *   orientações no pivô de 13/08/2026), para que ele não se perca e para
+ *   que, quando o envio for construído, não seja preciso reescrever nada.
  *
  * Conta remetente definida: engenharia.promav@gmail.com
  * ══════════════════════════════════════════════════════════════════════ */
@@ -16,28 +12,42 @@
 export const REMETENTE = 'engenharia.promav@gmail.com';
 
 /**
- * @param {{projeto:object, revisao:object, destinatario:object, anterior?:object, endereco?:string}} dados
- * @returns {{assunto:string, corpo:string}}
+ * Monta o e-mail de uma orientação para um destinatário.
+ *
+ * @param {{
+ *   projeto: { nome: string },
+ *   orientacao: {
+ *     titulo: string, descricao: string, data_da_mudanca: string,
+ *     autor_nome: string, responsavel_nome?: string | null,
+ *   },
+ *   destinatario: { nome: string },
+ *   endereco?: string,
+ * }} dados
+ * @returns {{ assunto: string, corpo: string }}
  */
-export function montarEmail({ projeto, revisao, destinatario, anterior, endereco }) {
+export function montarEmail({ projeto, orientacao, destinatario, endereco }) {
   const assunto = `Atualização de Escopo / Alteração no Projeto ${projeto.nome}`;
 
+  const [ano, mes, dia] = String(orientacao.data_da_mudanca).slice(0, 10).split('-');
   const linhas = [
     `Prezado(a) ${destinatario.nome},`,
     '',
     'Comunicado do sistema: uma atualização importante foi necessária no',
-    `andamento do projeto ${projeto.nome}. Seguem as mudanças:`,
+    `andamento do projeto ${projeto.nome}. Segue a mudança:`,
     '',
-    `Revisão que passa a valer: ${revisao.codigo}` + (anterior ? ` (substitui a ${anterior.codigo})` : ''),
+    `${orientacao.titulo} — em ${dia}/${mes}/${ano}`,
     '',
-    'O que mudou:',
-    revisao.o_que_mudou,
+    orientacao.descricao,
     '',
-    `Publicada por ${revisao.autor_nome}.`,
-    '',
-    'Confirme no sistema que você viu esta mudança. Enquanto não confirmar,',
-    'o arquivo desta revisão fica bloqueado para você.',
+    `Publicada por ${orientacao.autor_nome}.`,
   ];
+
+  if (orientacao.responsavel_nome) {
+    linhas.push(`Quem executa: ${orientacao.responsavel_nome}.`);
+  }
+
+  linhas.push('', 'Confirme no sistema que você viu esta mudança — fica',
+    'registrado quem soube e quando.');
 
   if (endereco) {
     linhas.push('', `Abrir no sistema: ${endereco}`);
