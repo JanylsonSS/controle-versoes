@@ -15,20 +15,21 @@
 
 Hoje o sistema roda num computador só, ligado à mão. Para virar ferramenta de
 trabalho, ele precisa de um lugar onde fique **ligado o tempo todo e acessível
-pela internet** — inclusive do celular no canteiro. São quatro caminhos, de
-R$ 0 a cerca de R$ 700 por ano.
+pela internet** — e que, quando o celular voltar ao escopo, alcance também o
+canteiro. São quatro caminhos, de R$ 0 a cerca de R$ 700 por ano.
 
 ## O que o sistema precisa desse lugar
 
 Sem termo técnico, é isto:
 
-1. **Ficar ligado sempre.** Se sair do ar num sábado, a obra não confere a versão
-   e volta ao WhatsApp — que é justamente o que estamos tentando eliminar.
+1. **Ficar ligado sempre.** Se sair do ar num sábado, a equipe não confere a
+   orientação em vigor e volta ao WhatsApp — que é justamente o que estamos
+   tentando eliminar.
 2. **Ser aberto pela internet**, com endereço seguro (o cadeado do navegador),
-   para funcionar no canteiro.
-3. **Não perder os dados.** O sistema guarda um arquivo com todas as revisões,
-   quem confirmou ciência e os registros de retrabalho. Esse arquivo não pode
-   sumir num reinício.
+   para funcionar fora do escritório.
+3. **Não perder os dados.** O sistema guarda um arquivo com todas as
+   orientações, quem confirmou ciência e o andamento de cada obra. Esse
+   arquivo não pode sumir num reinício.
 4. **Ser atualizável pelos estagiários** sem virar um projeto a cada ajuste.
 
 ---
@@ -120,10 +121,10 @@ uma versão nova, o serviço percebe e publica sozinho, em poucos minutos.
 
 Render e Railway têm plano grátis, e é tentador. Mas nele:
 
-- o sistema **dorme** depois de alguns minutos sem uso — quem abrir no canteiro
-  espera meio minuto para a tela carregar, e vai desistir;
-- o disco é **apagado a cada publicação** — as confirmações de ciência e os
-  registros de retrabalho somem.
+- o sistema **dorme** depois de alguns minutos sem uso — quem abrir espera
+  meio minuto para a tela carregar, e vai desistir;
+- o disco é **apagado a cada publicação** — as orientações e as confirmações
+  de ciência somem.
 
 Para este sistema, o plano gratuito não serve. Se a escolha for a opção 1, tem
 que ser o plano pago.
@@ -146,23 +147,25 @@ Três motivos:
 3. **A opção 3 contradiz o objetivo.** Um sistema que existe para ser a fonte
    única da verdade não pode depender de alguém não ter desligado um computador.
 
-**Para colocar em perspectiva:** a hospedagem custa por ano menos do que um único
-retrabalho por versão errada. Quando o custo real da pavimentação for levantado
-com a obra, vale colocar os dois números lado a lado na mesma tela.
-*(O valor que aparece hoje no protótipo é fictício — não use na apresentação
-como se fosse real.)*
+**Para colocar em perspectiva:** a hospedagem custa por ano menos do que um
+único serviço refeito por informação velha — o caso da pavimentação que
+motivou o sistema. O custo real daquele episódio ainda não foi levantado com
+a obra (é pergunta em aberto em [PENDENCIAS.md](PENDENCIAS.md)); quando for,
+vale colocar os dois números lado a lado.
 
 ---
 
 ## O que essa decisão destrava
 
-Três coisas dependem dela e estão paradas até lá:
+Três coisas dependem dela e estão paradas até lá — a mesma lista da Parte 3
+do [PENDENCIAS.md](PENDENCIAS.md):
 
-1. **Login com a conta Google da Promav.** O Google exige registrar um endereço
+1. **Login com a conta Google (R16).** O Google exige registrar um endereço
    fixo de retorno, e esse endereço só existe depois de escolher onde hospedar.
-2. **Teste de verdade no celular no canteiro**, com internet real em vez da rede
-   do escritório.
-3. **Backup automático do banco para o Google Drive** — depende de onde o sistema
+2. **Envio do e-mail de aviso (R18).** O texto está pronto no código; o canal
+   de envio e o endereço do link "abrir no sistema" esperam a decisão.
+3. **O destino final do backup automático.** A cópia periódica local pode (e
+   deve) existir antes; para onde ela desemboca depende de onde o sistema
    estiver rodando.
 
 ---

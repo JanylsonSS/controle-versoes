@@ -59,6 +59,10 @@ compromissos que a direção aprovou:
 
 ## Os pedidos da coordenação (R16–R23) e o que o pivô acrescentou (R25–R26)
 
+> Não existe R24: a numeração saltou de R23 para R25 quando a placa de aviso
+> — numerada de início como "R21b" — foi incorporada ao R21 e os acréscimos
+> entraram como R25/R26. É um buraco de numeração, não um pedido descartado.
+
 | R | Pedido | Situação |
 |---|---|---|
 | **R16** | Login com conta Google | ❌ espera a hospedagem; contas são Gmail comuns → lista de 8 autorizados mantida à mão |

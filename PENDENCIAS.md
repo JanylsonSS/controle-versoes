@@ -70,8 +70,9 @@ Três coisas esperam por essa decisão:
 
 1. **Login com a conta Google (R16)** — precisa do endereço fixo de retorno.
 2. **Envio do e-mail de aviso (R18)** — texto pronto, falta o canal.
-3. **Backup automático do banco** — cópia periódica de `dados/banco.db` para o
-   Drive. O GitHub não cobre isso: guarda código, não dados.
+3. **O destino final do backup automático** — a cópia periódica local pode
+   existir antes; para onde ela vai (Drive, serviço) depende de onde o
+   sistema rodar. O GitHub não cobre isso: guarda código, não dados.
 
 ---
 
@@ -115,6 +116,15 @@ Três coisas esperam por essa decisão:
    depende de alguém entrar para ver.
 6. **Sinal e aparelho no canteiro** — pendente desde o documento original;
    voltou a importar só quando o celular voltar ao escopo.
+7. **O prazo da ciência é um chute.** Os 2 dias de `DIAS_PARA_COBRAR_CIENCIA`
+   (`src/regras/ciencia.js`) esperam calibração com a equipe — pergunta P3
+   do roteiro de apresentação.
+8. **A agenda acabou de nascer.** Reunião e visita técnica bastam, ou falta
+   um terceiro tipo? Quem mais, além de coordenação e direção, precisa
+   marcar para os outros? (P9 e P10 do roteiro.)
+9. **Só existem dois aprovadores** (direção e coordenação) e ninguém aprova
+   a própria orientação — com os dois fora, ou um deles sendo o autor, o
+   aval espera. Aceitável? (P14 do roteiro.)
 
 ---
 

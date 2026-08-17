@@ -23,8 +23,9 @@ export const FUSO = 'America/Sao_Paulo';
 export const PASTA_DADOS = path.resolve(RAIZ, process.env.PASTA_DADOS || 'dados');
 export const CAMINHO_BANCO = path.join(PASTA_DADOS, 'banco.db');
 
-/* O frontend em React é compilado para `dist/` (npm run build, passo 2).
- * Enquanto o build não existir, o servidor mostra a página provisória
- * de `publico/`. */
+/* O frontend em React é compilado para `dist/` (npm run app:build — o
+ * iniciar.bat roda isso sozinho quando falta). Enquanto o build não
+ * existir nesta máquina, o servidor mostra a página provisória de
+ * `publico/`. */
 export const PASTA_DIST = path.join(RAIZ, 'dist');
 export const PASTA_PUBLICA = path.join(RAIZ, 'publico');

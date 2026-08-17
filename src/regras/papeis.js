@@ -2,7 +2,7 @@
  * R9 — PAPÉIS E PERMISSÕES POR ÁREA
  *
  * Regra do documento: quem projeta publica; quem executa, orça e contrata
- * consulta e recebe. Publicar uma versão vigente é ação restrita.
+ * consulta e recebe. Publicar uma orientação é ação restrita.
  * ══════════════════════════════════════════════════════════════════════ */
 
 export const PAPEIS = {
@@ -20,7 +20,7 @@ export const PAPEIS = {
   },
   ORCAMENTO: {
     rotulo: 'Orçamento',
-    resumo: 'Orça sobre a versão vigente',
+    resumo: 'Orça com base nas informações atuais',
     publica: false,
     aprova: false,
   },
@@ -46,7 +46,7 @@ export const PAPEIS = {
 
 /* Não existe papel de TI aqui de propósito. Quem mantém o sistema faz isso
  * por fora (servidor, banco, código) e não participa dos projetos — logo,
- * não deve receber aviso de revisão nem ocupar uma linha na lista de quem
+ * não deve receber aviso de orientação nem ocupar uma linha na lista de quem
  * precisa confirmar ciência. */
 
 export function rotuloDoPapel(papel) {
@@ -54,12 +54,12 @@ export function rotuloDoPapel(papel) {
 }
 
 /**
- * R9 — quem publica revisão: engenharia, arquitetura, coordenação e direção.
+ * R9 — quem publica orientação: engenharia, arquitetura, coordenação e direção.
  *
- * A coordenação entrou em 06/08/2026, a pedido dela: publica registro de
- * andamento e também revisão técnica em mudança grande. Como ela também
- * aprova, existe uma trava separada em `aprovacao.js` — ninguém aprova a
- * própria revisão, senão a aprovação vira formalidade.
+ * A coordenação entrou em 06/08/2026, a pedido dela: publica andamento e
+ * também orientações em mudanças grandes. Como ela também aprova, existe uma
+ * trava separada em `aprovacao.js` — ninguém aprova a própria orientação,
+ * senão o aval vira formalidade.
  *
  * Fica de fora quem só consulta: orçamento e estágio.
  */
@@ -68,19 +68,13 @@ export function podePublicar(usuario) {
 }
 
 /**
- * R4 — cancelar uma revisão é tão sério quanto publicar: mesma restrição.
- */
-export function podeCancelar(usuario) {
-  return podePublicar(usuario);
-}
-
-/**
- * R17 (novo, pedido pela direção) — alteração grande só vale depois do aval
- * do CEO ou da Coordenadora de contratos.
+ * R17 (pedido pela direção) — mudança que altera orçamento ou prazo pede o
+ * aval do CEO ou da Coordenadora de contratos.
  *
- * ATENÇÃO: hoje isto só declara QUEM aprova. O fluxo de aprovação ainda não
- * foi construído — falta definir o que conta como "alteração grande".
- * Ver PENDENCIAS.md, seção "Requisitos novos".
+ * Desde 13/08/2026 o aval é registro, não portão: a orientação já vale e a
+ * atividade já corre. A fila e as rotas estão em `src/api/orientacoes.js`;
+ * o que conta como "grande" e a trava "ninguém aprova a própria" estão em
+ * `aprovacao.js`.
  */
 export function podeAprovar(usuario) {
   return Boolean(usuario && PAPEIS[usuario.papel]?.aprova);
@@ -97,7 +91,7 @@ export function podeCadastrarProjeto(usuario) {
   return podeAprovar(usuario);
 }
 
-/* Registrar andamento e registrar incidente não têm função aqui de
- * propósito: qualquer pessoa da equipe pode fazer os dois, e a restrição
- * de equipe é do R19, aplicada no roteador. Uma função que sempre devolve
- * verdadeiro dá a impressão de que existe uma regra onde não existe. */
+/* Registrar andamento não tem função aqui de propósito: qualquer pessoa da
+ * equipe pode fazer, e a restrição de equipe é do R19, aplicada nas guardas
+ * da API. Uma função que sempre devolve verdadeiro dá a impressão de que
+ * existe uma regra onde não existe. */
