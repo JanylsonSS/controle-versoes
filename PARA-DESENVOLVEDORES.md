@@ -102,7 +102,7 @@ ferramentas/
   servidor-smoke.mjs       o servidor que o Playwright sobe (porta 3998)
 frontend/
   playwright.config.js     npm run test:ui — smoke sobre o build real
-  smoke/fluxos.spec.js     os 6 cenários de navegador
+  smoke/fluxos.spec.js     os 8 cenários de navegador
   vite.config.js           proxy /api → :3000; build → ../dist
   src/
     api.js                 o único fetch do app + formatação de datas pt-BR

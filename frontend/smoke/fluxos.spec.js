@@ -140,3 +140,32 @@ test('a agenda: clicar no dia, marcar, e o compromisso aparecer na semana', asyn
   await expect(page.locator('.calendario-grade')).toContainText('08:30');
   await expect(page.locator('.calendario-grade')).toContainText('Visita');
 });
+
+test('os indicadores (R12): a direção vê os números; a engenharia, não', async ({ page }) => {
+  // Sem trocar, o sistema é o Álvaro (engenharia): nem o link aparece.
+  await page.goto('/');
+  await expect(page.locator('.lateral').getByText('Indicadores')).toHaveCount(0);
+
+  await entrarComo(page, 'Matheus Grangeiro — Direção', { aprova: true });
+  await page.locator('.lateral').getByText('Indicadores').click();
+
+  await expect(page.getByRole('heading', { name: 'Indicadores' })).toBeVisible();
+  await expect(page.locator('.indicadores-gerais')).toContainText('tempo médio até a ciência');
+  // as 5 obras na tabela por obra
+  await expect(page.locator('.tabela tbody tr').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Por obra' })).toBeVisible();
+});
+
+test('o conjunto (R22): da ficha para as obras correlatas', async ({ page }) => {
+  await page.goto('/');
+  await entrarComo(page, 'Luiza Elisa — Engenharia');
+
+  // A Luiza está nas duas escolas do conjunto "Reformas de Escolas 2026".
+  await page.goto('/projetos/3');
+  await page.getByRole('link', { name: 'Reformas de Escolas 2026' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Reformas de Escolas 2026' })).toBeVisible();
+  await expect(page.locator('.cartao-projeto')).toHaveCount(2);
+  await expect(page.locator('.grade-projetos')).toContainText('Escola Municipal Norte');
+  await expect(page.locator('.grade-projetos')).toContainText('Escola Municipal Sul');
+});

@@ -58,7 +58,7 @@ Para conferir que o servidor está inteiro — 218 verificações automáticas
 npm test
 ```
 
-Para conferir o frontend de verdade — 6 cenários no navegador, sobre o build
+Para conferir o frontend de verdade — 8 cenários no navegador, sobre o build
 real, num banco descartável:
 
 ```bash
@@ -175,7 +175,7 @@ src/
 ferramentas/           backup manual e o servidor do smoke test
 frontend/              o aplicativo React (Vite)
   src/telas/           Início, Projeto, Quadro, Aprovações
-  smoke/               os 6 cenários de navegador (npm run test:ui)
+  smoke/               os 8 cenários de navegador (npm run test:ui)
 verificacao/           as 218 verificações (npm test)
 dados/                 criado ao rodar: banco.db e backups/
 dist/                  o build do frontend (gerado; fora do git)

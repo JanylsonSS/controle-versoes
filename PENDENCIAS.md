@@ -64,7 +64,7 @@ servem de metas novas, ou o retrabalho volta a ser medido de outro jeito?
   (a cada 6 h + despedida do `recomecar`; falta só o destino fora do disco),
   rastro de toda troca de sessão (tabela `trocas_de_sessao`), cookie que
   morre com o navegador, confirmação para virar quem aprova, e smoke test
-  do frontend (6 cenários Playwright, `npm run test:ui`). O código está no
+  do frontend (8 cenários Playwright, `npm run test:ui`). O código está no
   GitHub desde 17/08: repositório **privado** `JanylsonSS/controle-versoes`
   (a conta do estagiário de TI que mantém o sistema) — todo `git push` é
   backup do código.
@@ -108,7 +108,7 @@ Três coisas esperam por essa decisão:
 4. **A lateral atualiza a cada troca de tela** (projetos e contador de
    aprovações). Sem atualização "ao vivo" — para 8 pessoas, recarregar na
    navegação basta.
-5. **O frontend tem só o smoke test** (6 cenários Playwright desde 17/08:
+5. **O frontend tem só o smoke test** (8 cenários Playwright desde 17/08:
    publicar → confirmar → aprovar, o arrastar do quadro, a agenda). As 218
    verificações cobrem API + backup. Cobertura decente do frontend continua
    decisão do time de TI.
