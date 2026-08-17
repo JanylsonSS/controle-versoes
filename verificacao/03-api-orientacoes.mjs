@@ -68,6 +68,29 @@ r = await api('POST', '/api/projetos/1/orientacoes', COMO.lya, {
 });
 ok('responsável fora da equipe é recusado', r.status === 400);
 
+secao('3b. R15 — de onde a mudança veio');
+r = await api('POST', '/api/projetos/1/orientacoes', COMO.lya, {
+  titulo: 'Guia rebaixada também na esquina norte',
+  descricao: 'Replicar o detalhe da rampa sul na esquina norte.',
+  origem: 'Pedido do cliente na reunião de 14/08',
+  data_da_mudanca: '2026-08-14',
+});
+const comOrigemId = r.dados.id;
+r = await api('GET', `/api/orientacoes/${comOrigemId}`, COMO.alvaro);
+ok('a origem gravada volta na leitura',
+   r.dados.orientacao.origem === 'Pedido do cliente na reunião de 14/08');
+r = await api('GET', `/api/orientacoes/${rampaId}`, COMO.alvaro);
+ok('sem origem informada fica nulo — o campo é opcional',
+   r.dados.orientacao.origem === null);
+r = await api('PUT', `/api/orientacoes/${comOrigemId}`, COMO.lya, {
+  titulo: 'Guia rebaixada também na esquina norte',
+  descricao: 'Replicar o detalhe da rampa sul na esquina norte.',
+  origem: 'Ofício 42/2026 da prefeitura',
+  data_da_mudanca: '2026-08-14',
+});
+r = await api('GET', `/api/orientacoes/${comOrigemId}`, COMO.alvaro);
+ok('editar troca a origem', r.dados.orientacao.origem === 'Ofício 42/2026 da prefeitura');
+
 secao('4. Editar reabre a ciência de todos');
 await api('POST', `/api/orientacoes/${rampaId}/confirmar`, COMO.luiza, {});
 r = await api('GET', `/api/orientacoes/${rampaId}`, COMO.luiza);

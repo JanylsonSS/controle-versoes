@@ -131,6 +131,7 @@ async function popular() {
     descricao:
       'O cliente pediu porcelanato no lugar do laminado, e forro acústico no anexo. ' +
       'Aumenta material e acrescenta cerca de 15 dias ao prazo.',
+    origem: 'Pedido do presidente da Câmara na reunião de 06/08',
     dataDaMudanca: '2026-08-07', responsavelId: micael, autorId: vanessa,
     mudaOrcamentoOuPrazo: true, quando: em('2026-08-07T09:30:00-03:00'),
   });
@@ -167,6 +168,7 @@ async function popular() {
     descricao:
       'A vigilância sanitária exigiu que a sala de vacina fique no lado norte. ' +
       'Atualizar plantas, cortes e o layout de mobiliário.',
+    origem: 'Exigência da vigilância sanitária na vistoria de 28/07',
     dataDaMudanca: '2026-07-28', responsavelId: rafaela, autorId: thayna,
     quando: em('2026-07-28T10:10:00-03:00'),
   });

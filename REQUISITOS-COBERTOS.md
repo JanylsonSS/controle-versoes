@@ -55,7 +55,7 @@ compromissos que a direção aprovou:
 | **R11** | Registro de incidentes de retrabalho | ❌ **REMOVIDO** — ver o aviso no topo |
 | **R12** | Indicadores de uso | ❌ não nesta fase |
 | **R14** | Confiável e sempre disponível | ❌ depende da hospedagem (pendência antiga) |
-| **R15** | Registro de informação externa | ❌ não construído; a descrição da orientação cumpre parte do papel ("o cliente pediu em reunião…") |
+| **R15** | Registro de informação externa | ✅ **desde 17/08** — o campo "De onde veio" da orientação ("pedido do cliente na reunião de 12/08", "ofício da prefeitura"), opcional, visível nas informações atuais e no histórico. A data de chegada reutiliza a data da mudança |
 
 ## Os pedidos da coordenação (R16–R23, R25) e o que o pivô acrescentou (R26)
 

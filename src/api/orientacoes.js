@@ -59,6 +59,7 @@ export const rotasDeOrientacoes = [
       projetoId: projeto.id,
       titulo: texto(corpo, 'titulo', 'Dê um título à mudança — é o que aparece para todo mundo.'),
       descricao: texto(corpo, 'descricao', 'Descreva a mudança: é isso que a pessoa vai ler.'),
+      origem: textoOpcional(corpo, 'origem'), // R15 — de onde a mudança veio
       dataDaMudanca: dia(corpo, 'data_da_mudanca', 'Informe a data da mudança (AAAA-MM-DD).'),
       responsavelId: validarResponsavel(corpo, projeto.id),
       autorId: usuario.id,
@@ -78,6 +79,7 @@ export const rotasDeOrientacoes = [
       id: antiga.id,
       titulo: texto(corpo, 'titulo', 'Dê um título à mudança.'),
       descricao: texto(corpo, 'descricao', 'Descreva a mudança.'),
+      origem: textoOpcional(corpo, 'origem'),
       dataDaMudanca: dia(corpo, 'data_da_mudanca', 'Informe a data da mudança (AAAA-MM-DD).'),
       responsavelId: validarResponsavel(corpo, antiga.projeto_id),
       editorId: usuario.id,

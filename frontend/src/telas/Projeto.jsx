@@ -138,6 +138,9 @@ function InformacoesAtuais({ dados, aoMudar, aoEditar }) {
       </div>
 
       <p className="descricao">{atual.descricao}</p>
+      {atual.origem && (
+        <p className="meta" style={{ marginTop: 4 }}>De onde veio: {atual.origem}</p>
+      )}
 
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
         {dados.minha_confirmacao_pendente && (
@@ -229,6 +232,7 @@ function Historico({ projetoId, atualId }) {
             {escolhida.responsavel_nome && <> · quem fez: {escolhida.responsavel_nome}</>}
           </p>
           <p style={{ whiteSpace: 'pre-wrap' }}>{escolhida.descricao}</p>
+          {escolhida.origem && <p className="meta">De onde veio: {escolhida.origem}</p>}
         </div>
       )}
     </section>
@@ -424,6 +428,7 @@ function JanelaOrientacao({ aberta, projetoId, equipe, existente, aoFechar, aoMu
     const corpo = {
       titulo: form.get('titulo'),
       descricao: form.get('descricao'),
+      origem: form.get('origem') || null,
       data_da_mudanca: form.get('data_da_mudanca'),
       responsavel_id: form.get('responsavel_id') || null,
     };
@@ -464,6 +469,9 @@ function JanelaOrientacao({ aberta, projetoId, equipe, existente, aoFechar, aoMu
         </Campo>
         <Campo rotulo="Descrição" instrucao="O que a pessoa precisa saber para executar. Escreva para quem vai fazer, não para o sistema.">
           <textarea name="descricao" required rows={4} defaultValue={existente?.descricao ?? ''} />
+        </Campo>
+        <Campo rotulo="De onde veio" instrucao="Quem pediu e por onde — ex.: 'pedido do cliente na reunião de 12/08', 'ofício da prefeitura'. É o que responde 'eu não pedi isso' meses depois. Pode ficar em branco.">
+          <input name="origem" defaultValue={existente?.origem ?? ''} />
         </Campo>
         <Campo rotulo="Quem vai fazer" instrucao="A mudança vira automaticamente uma atividade no quadro, no nome dessa pessoa.">
           <select name="responsavel_id" defaultValue={existente?.responsavel_id ?? ''}>

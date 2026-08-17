@@ -179,8 +179,8 @@ export const orientacoes = {
    * marcada para o aval aparecer na fila — mas o trabalho já pode começar.
    */
   publicar({
-    projetoId, titulo, descricao, dataDaMudanca, responsavelId, autorId,
-    mudaOrcamentoOuPrazo = false, quando,
+    projetoId, titulo, descricao, origem = null, dataDaMudanca, responsavelId,
+    autorId, mudaOrcamentoOuPrazo = false, quando,
   }) {
     const instante = quando ?? agora();
     let novaId;
@@ -190,12 +190,12 @@ export const orientacoes = {
       const r = banco
         .prepare(
           `INSERT INTO orientacoes
-             (projeto_id, titulo, descricao, data_da_mudanca, responsavel_id,
-              muda_orcamento_ou_prazo, publicada_por, publicada_em)
-           VALUES (?,?,?,?,?,?,?,?)`
+             (projeto_id, titulo, descricao, origem, data_da_mudanca,
+              responsavel_id, muda_orcamento_ou_prazo, publicada_por, publicada_em)
+           VALUES (?,?,?,?,?,?,?,?,?)`
         )
         .run(
-          Number(projetoId), titulo, descricao, dataDaMudanca,
+          Number(projetoId), titulo, descricao, origem || null, dataDaMudanca,
           responsavelId ? Number(responsavelId) : null,
           mudaOrcamentoOuPrazo ? 1 : 0, Number(autorId), instante
         );
@@ -229,7 +229,7 @@ export const orientacoes = {
    * confirmações antigas seria guardar uma prova falsa. A atividade ligada
    * acompanha o novo título e a nova descrição.
    */
-  editar({ id, titulo, descricao, dataDaMudanca, responsavelId, editorId, quando }) {
+  editar({ id, titulo, descricao, origem = null, dataDaMudanca, responsavelId, editorId, quando }) {
     const instante = quando ?? agora();
     const antiga = orientacoes.porId(id);
     if (!antiga) return false;
@@ -238,12 +238,13 @@ export const orientacoes = {
     try {
       banco
         .prepare(
-          `UPDATE orientacoes SET titulo = ?, descricao = ?, data_da_mudanca = ?,
-                  responsavel_id = ?, editada_por = ?, editada_em = ?
+          `UPDATE orientacoes SET titulo = ?, descricao = ?, origem = ?,
+                  data_da_mudanca = ?, responsavel_id = ?, editada_por = ?,
+                  editada_em = ?
             WHERE id = ?`
         )
         .run(
-          titulo, descricao, dataDaMudanca,
+          titulo, descricao, origem || null, dataDaMudanca,
           responsavelId ? Number(responsavelId) : null,
           Number(editorId), instante, Number(id)
         );

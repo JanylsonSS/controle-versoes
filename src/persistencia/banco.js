@@ -90,6 +90,10 @@ banco.exec(`
     projeto_id              INTEGER NOT NULL REFERENCES projetos(id),
     titulo                  TEXT NOT NULL,
     descricao               TEXT NOT NULL,
+    -- R15: de onde a mudança veio ("pedido do cliente na reunião de
+    -- 12/08", "ofício da prefeitura") — opcional, mas é o que responde
+    -- "eu não pedi isso" meses depois.
+    origem                  TEXT,
     data_da_mudanca         TEXT NOT NULL,
     responsavel_id          INTEGER REFERENCES usuarios(id),
     atividade_id            INTEGER REFERENCES atividades(id),
@@ -181,6 +185,19 @@ banco.exec(`
  * forma, não de formato. */
 for (const tabela of ['acessos_versao_antiga', 'incidentes', 'revisoes']) {
   banco.exec(`DROP TABLE IF EXISTS ${tabela}`);
+}
+
+/* ─── Migrações leves ───────────────────────────────────────────────────
+ * O CREATE TABLE IF NOT EXISTS não acrescenta coluna em banco que já
+ * existe — colunas novas entram aqui, uma a uma, com o porquê. */
+
+// R15 (17/08/2026): a origem da mudança entrou depois do pivô.
+const colunasDeOrientacoes = banco
+  .prepare("SELECT name FROM pragma_table_info('orientacoes')")
+  .all()
+  .map((c) => c.name);
+if (!colunasDeOrientacoes.includes('origem')) {
+  banco.exec('ALTER TABLE orientacoes ADD COLUMN origem TEXT');
 }
 
 /** Verdadeiro quando o banco ainda não tem dados (usado para popular o seed). */
