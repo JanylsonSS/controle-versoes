@@ -131,7 +131,7 @@ Três coisas esperam por essa decisão:
 3. **A fórmula do prazo mínimo** (antecedência entre publicar uma mudança e
    ela virar serviço) ficou órfã do modelo antigo, mas a pergunta continua
    válida para orientações. As 6 perguntas de calibração seguem no
-   [APRESENTACAO.md](APRESENTACAO.md).
+   [ROTEIRO.md](ROTEIRO.md).
 4. **Sobreposição quadro × andamento**: continuam existindo duas formas de
    dizer "estou fazendo" (o cartão e o commit). Decidir no piloto qual
    sobrevive, ou se amarram.
@@ -141,14 +141,14 @@ Três coisas esperam por essa decisão:
    voltou a importar só quando o celular voltar ao escopo.
 7. **O prazo da ciência é um chute.** Os 2 dias de `DIAS_PARA_COBRAR_CIENCIA`
    (`src/regras/ciencia.js`) esperam calibração com a equipe — pergunta P3
-   do roteiro de apresentação.
+   do ROTEIRO.md (ROTEIRO.md).
 8. **A agenda acabou de nascer.** Reunião e visita técnica bastam, ou falta
    um terceiro tipo? (P9 do roteiro. A P10 — quem marca para os outros —
    foi respondida em 17/08: todos, com a coordenação incluída
    automaticamente quando não participa.)
 9. **Só existem dois aprovadores** (direção e coordenação) e ninguém aprova
    a própria orientação — com os dois fora, ou um deles sendo o autor, o
-   aval espera. Aceitável? (P14 do roteiro.)
+   aval espera. Aceitável? (P14 do ROTEIRO.md.)
 
 ---
 

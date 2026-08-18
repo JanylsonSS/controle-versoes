@@ -368,7 +368,7 @@ quadro, a agenda — num servidor próprio (porta 3998, banco `dados-smoke/`
 descartável). Numa máquina nova, os navegadores do Playwright se instalam com
 `npx --prefix frontend playwright install chromium`. Cobertura além do smoke
 continua decisão do time de TI; para conferência manual, o roteiro de
-[APRESENTACAO.md](APRESENTACAO.md).
+[ROTEIRO.md](ROTEIRO.md).
 
 ### Escrevendo uma verificação nova
 
